@@ -34,6 +34,7 @@ const NavbarComponent = () => {
                     </a>
                     <a
                          onMouseEnter={() => dispatch(commingSoonActive(true))}
+                         onMouseLeave={() => dispatch(commingSoonActive(false))}
                         href="#component2"
                        
                         className="hover:text-gray-300 text-navbartextSize  w-[25%] text-center border-b-2 border-y-gray-600"
@@ -42,6 +43,7 @@ const NavbarComponent = () => {
                     </a>
                     <a
                          onMouseEnter={() => dispatch(commingSoonActive(true))}
+                         onMouseLeave={() => dispatch(commingSoonActive(false))}
                         href="#component3"
                        
                         className="hover:text-gray-300 text-navbartextSize w-[25%] text-center border-b-2 border-y-gray-600"
@@ -50,6 +52,7 @@ const NavbarComponent = () => {
                     </a>
                     <a
                          onMouseEnter={() => dispatch(commingSoonActive(true))}
+                         onMouseLeave={() => dispatch(commingSoonActive(false))}
                         href="#component4"
                         
                         className="hover:text-gray-300 text-navbartextSize w-[25%] text-center border-b-2 border-y-gray-600"
