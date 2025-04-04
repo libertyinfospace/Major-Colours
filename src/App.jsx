@@ -4,6 +4,8 @@ import HomePage from './page/HomePage'
 import LoginPage from './page/LoginPage';
 import Layout from './components/Layout';
 import AboutPage from './page/AboutPage';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 function App() {
 
@@ -34,9 +36,11 @@ function App() {
   ] );
 
   return (
-    <RouterProvider router={router}>
+    <Provider store={store}>
 
+    <RouterProvider router={router}>
     </RouterProvider>
+    </Provider>
   )
 }
 

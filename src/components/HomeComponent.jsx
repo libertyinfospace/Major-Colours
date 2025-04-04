@@ -16,6 +16,7 @@ const HomeComponent = () => {
       const [currentTextIndex, setCurrentTextIndex] = useState(0);
       const [isDeleting, setIsDeleting] = useState(false);
       const [charIndex, setCharIndex] = useState(0);
+      const [showCursor, setShowCursor] = useState(true);
 
 
       useEffect(() => {
@@ -45,11 +46,19 @@ const HomeComponent = () => {
         return () => clearTimeout(timer);
       }, [displayedText, isDeleting, charIndex, currentTextIndex, texts]);
 
+      useEffect(() => {
+        const cursorInterval = setInterval(() => {
+          setShowCursor((prev) => !prev);
+        }, 500);
+    
+        return () => clearInterval(cursorInterval);
+      }, []);
+
 
   return (
-    <div className='h-[469px]  relative top-[170px] w-[100%] '>
+    <div className='h-[469px]  relative top-[170px] w-[100%] flex items-center justify-center'>
       {/* <h1 className='text-white text-homePageHeadingSize font-bold'>Earn your Rank</h1> */}
-      {/* <motion.h1
+      <motion.h1
               id="heading1"
               className="sm:text-5xl md:text-6xl leading-tight text-[30px] font-bold "
               initial={{ opacity: 0, y: -50 }}
@@ -58,13 +67,19 @@ const HomeComponent = () => {
             >
               <span className="font-FIra cursor-pointer">
                 <span className="typing-effect">
-                  Hey!<span className="text-red-600">(</span>
-                  <span className="text-yellow-400">{displayedText}</span>
-                  <span className="text-red-600">)</span>
+                  <span className="text-white">{displayedText}
+                  <motion.span
+                    animate={{ opacity: showCursor ? 1 : 0 }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    className="text-white"
+                    >
+                    _
+                    </motion.span>
+                  </span>
                 </span>
               </span>
-            </motion.h1> */}
-        <video className='w-full h-full object-cover ' src={videoUrl}  autoPlay loop muted ></video>
+            </motion.h1>
+        {/* <video className='w-full h-full object-cover ' src={videoUrl}  autoPlay loop muted ></video> */}
         
     </div>
   )
