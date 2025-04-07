@@ -10,6 +10,7 @@ export default {
       colors: {
         backgroundColor: "var(--background-color)",
         textColor: "var(--text-color)",
+        textWhiteColor:'var(--primary-color)'
       },
       fontFamily:{
         nunito:'var(--nunito-font)'

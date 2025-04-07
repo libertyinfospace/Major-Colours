@@ -6,6 +6,10 @@ import Layout from './components/Layout';
 import AboutPage from './page/AboutPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import OtpPage from './page/OtpPage';
+import ForgotPasswordPage from './page/ForgotPasswordPage';
+import CreateNewPasswordPage from './page/CreateNewPasswordPage';
+import RegisterPage from './page/RegisterPage';
 
 function App() {
 
@@ -29,6 +33,22 @@ function App() {
     {
       path: "/login",
       element: <LoginPage />,
+    },
+    {
+      path: "/otp",
+      element: <OtpPage />,
+    },
+    {
+      path: "/forgot",
+      element: <ForgotPasswordPage />,
+    },
+    {
+      path: "/newPassword",
+      element: <CreateNewPasswordPage />,
+    },
+    {
+      path: "/register",
+      element: <RegisterPage />,
     }
 
 

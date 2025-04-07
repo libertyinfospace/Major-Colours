@@ -14,7 +14,6 @@ import dummyData from '../utils/dummyData'
 
 
 const RankCriteriaComponent = () => {
-  console.log(dummyData)
   return (
     <div className='w-[100%] h-[100%] flex flex-col gap-10'>
         <div className='flex justify-between flex-col items-center xl:items-start gap-5 xl:flex-row xl:gap-0'>

@@ -3,10 +3,12 @@ import majorColoursLogo from "../assets/img/MAJOR COLOURS-LOGO.png";
 import CommingSoonComponent from "./CommingSoonComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { commingSoonActive } from "../store/activeSlices";
+import { use } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const NavbarComponent = () => {
-    
+    const navigate =useNavigate();
     const commingSoonStatus = useSelector((state) => state.active.commingSoonActive);
     const dispatch = useDispatch();
     console.log(commingSoonStatus)
@@ -68,7 +70,7 @@ const NavbarComponent = () => {
                 {/* Third Part: List */}
                 <ul className="menu flex h-fit items-center text-textColor space-x-6">
                     <li
-                        onClick={() => navigateTo("Page 1")}
+                        onClick={() => navigate("/login")}
                         className="cursor-pointer hover:text-gray-300 text-navbartextSize"
                     >
                        Membership

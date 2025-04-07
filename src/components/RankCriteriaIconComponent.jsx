@@ -4,7 +4,7 @@ import { rankCriteriaData, rankInfoActiveState } from '../store/activeSlices';
 
 const RankCriteriaIconComponent = ({iconPath ,data , iconPath1 , name1 , name2 , altName}) => {
     const rankActive = useSelector((state) => state.active.rankCretriaActiveState); 
-    
+    console.log(data)
     const dispatch =useDispatch();
     const rankCateriaOvbj = {
         iconPath:iconPath,
