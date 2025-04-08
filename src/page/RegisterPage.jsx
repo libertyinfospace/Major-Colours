@@ -21,6 +21,7 @@ import addIcon from '../assets/logo/add.svg'
 import minusIcon from '../assets/logo/minus.svg'
 import SampleVideoModal from '../components/SampleVideoModal'
 import SafetyGuidelinesModal from '../components/SafetyGuidelinesModal'
+import RegisterVideoSubmission from './RegisterVideoSubmission'
 
 // Define rank icon data outside component to prevent recreation on each render
 const rankIconsData = [
@@ -69,6 +70,7 @@ const RegisterPage = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
   const [isLaptop, setIsLaptop] = useState(false)
+  const [showVideoSubmission, setShowVideoSubmission] = useState(false)
   
   // Effect to handle window resize for responsive design
   useEffect(() => {
@@ -247,49 +249,63 @@ const RegisterPage = () => {
     setActiveButton('video')
   }, []);
 
+  const handleVideoSubmissionClick = () => {
+    setShowVideoSubmission(true);
+  };
+
+  const handleBackToCriteria = () => {
+    setShowVideoSubmission(false);
+  };
+
   return (
     <div className='w-full relative bg-backgroundColor min-h-screen'>
       <ProfileHeader/>
-      <div className='pt-[8rem] pb-[1rem] sm:px-[3rem] md:px-[4rem] lg:px-[5rem] px-[1rem] 2xl:items-start flex flex-col items-center 2xl:flex-row justify-between w-full min-h-screen'>
+      <div className='pt-[8rem] pb-[1rem] sm:px-[3rem] md:px-[4rem] lg:px-[5rem] px-[1rem] 2xl:items-start flex flex-col 2xl:gap-0 gap-10 items-center 2xl:flex-row justify-between w-full min-h-screen'>
         <PersonalDetailsComponent/>
         <section className='lg:w-[90%] xl:w-[60rem] w-full flex flex-col gap-12 min-h-screen'>
-          
-          <h2 className='text-[2rem] md:text-[2.5rem] text-textWhiteColor text-center font-bold'>CRITERIA</h2>
-          
-          <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
-            <div className='flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible whitespace-nowrap hide-scrollbar'
-                 style={{ WebkitOverflowScrolling: 'touch' }}>
-              {renderRankIcons}
-            </div>
-          </div>
-          <SelectRankComponent/>
-          
-          <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
-            {renderCardWithOrComponents}
-          </div>
+          {!showVideoSubmission ? (
+            <>
+              <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
+              <h1 className='text-textWhiteColor w-[100%] text-center pb-5 font-bold text-[2.5rem]'>SELECT RANK</h1>
+                <div className='flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible whitespace-nowrap hide-scrollbar'
+                     style={{ WebkitOverflowScrolling: 'touch' }}>
+                      
+                  {renderRankIcons}
+                </div>
+              </div>
+              <SelectRankComponent onVideoClick={handleVideoSubmissionClick}/>
+              <h2 className='text-[2rem] md:text-[2.5rem] text-textWhiteColor text-center font-bold'>CRITERIA</h2>
+              
+              <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
+                {renderCardWithOrComponents}
+              </div>
 
-          <div className="sm:w-[80%] md:w-[70%] lg:w-[60%] w-[95%] mx-auto text-base md:text-lg lg:text-xl sm:justify-evenly justify-between text-textWhiteColor flex">
-            <div 
-              className="flex gap-2 md:gap-3 cursor-pointer"
-              onClick={handleSampleVideoClick}
-            >
-              <img 
-                src={activeButton === 'video' ? minusIcon : addIcon} 
-                alt={activeButton === 'video' ? "Close sample video" : "Add sample video"} 
-              />
-              <p>Sample Video</p>
-            </div>
-            <div 
-              className="flex gap-2 md:gap-3 cursor-pointer"
-              onClick={handleSafetyGuidelinesClick}
-            >
-              <img 
-                src={activeButton === 'guidelines' ? minusIcon : addIcon} 
-                alt={activeButton === 'guidelines' ? "Close safety guidelines" : "Add safety guidelines"} 
-              />
-              <p>Safety Guidelines</p>
-            </div>
-          </div>
+              <div className="sm:w-[80%] md:w-[70%] lg:w-[60%] w-[95%] mx-auto text-base md:text-lg lg:text-xl sm:justify-evenly justify-between text-textWhiteColor flex">
+                <div 
+                  className="flex gap-2 md:gap-3 cursor-pointer"
+                  onClick={handleSampleVideoClick}
+                >
+                  <img 
+                    src={activeButton === 'video' ? minusIcon : addIcon} 
+                    alt={activeButton === 'video' ? "Close sample video" : "Add sample video"} 
+                  />
+                  <p>Sample Video</p>
+                </div>
+                <div 
+                  className="flex gap-2 md:gap-3 cursor-pointer"
+                  onClick={handleSafetyGuidelinesClick}
+                >
+                  <img 
+                    src={activeButton === 'guidelines' ? minusIcon : addIcon} 
+                    alt={activeButton === 'guidelines' ? "Close safety guidelines" : "Add safety guidelines"} 
+                  />
+                  <p>Safety Guidelines</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <RegisterVideoSubmission onBack={handleBackToCriteria} />
+          )}
         </section>
       </div>
       <FooterLinkComponent/>
