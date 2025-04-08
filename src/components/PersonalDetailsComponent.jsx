@@ -304,14 +304,6 @@ const PersonalDetailsComponent = () => {
             </label>
             {errors.acceptPrivacy && <p className='text-red-500 text-sm mt-1'>{errors.acceptPrivacy}</p>}
           </div>
-
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="bg-blue-900 text-white py-3 rounded mt-4 hover:bg-blue-800 transition-colors disabled:opacity-70"
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </button>
         </form>
       )}
     </div>
