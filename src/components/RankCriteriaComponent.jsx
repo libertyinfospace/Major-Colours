@@ -31,10 +31,6 @@ const RankCriteriaComponent = () => {
                 <RankCriteriaLineComponent />
                 <RankCriteriaIconComponent iconPath={excalibur} data={dummyData[3]} iconPath1={excalibur1} name1={"EXCALIBUR"} name2={"LEVEL 4"} altName={"excalibur lebel 1"} />
             </div>
-
-            
-
-            
         </div>
         <RankCritrieaCardContainerComponent/>
     </div>

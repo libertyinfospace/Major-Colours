@@ -9,10 +9,11 @@ const RankCriteriaOrComponent = () => {
                 <div key={index} className='w-[5px] h-[3px]  bg-[#484848]'></div>
               ))}
         </div>
-        <p className='text-[2.5rem]'>OR</p>
+        <p className='text-[2rem] text-textWhiteColor'>OR</p>
         <div  className='flex flex-col gap-1' >
           {arr.map((_, index) => (
-                <div key={index} className='w-[5px] h-[3px]  bg-[#484848]'></div>
+                <div key={index} className='w-[5px] h-[3px]  bg-[#484848]'>
+                </div>
               ))}
         </div>
 

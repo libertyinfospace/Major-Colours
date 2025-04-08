@@ -10,6 +10,8 @@ import OtpPage from './page/OtpPage';
 import ForgotPasswordPage from './page/ForgotPasswordPage';
 import CreateNewPasswordPage from './page/CreateNewPasswordPage';
 import RegisterPage from './page/RegisterPage';
+import RegisterVideoSubmission from './page/RegisterVideoSubmission';
+import VideoUploadFailure from './page/VideoUploadFailure';
 
 function App() {
 
@@ -49,6 +51,14 @@ function App() {
     {
       path: "/register",
       element: <RegisterPage />,
+    },
+    {
+      path: "/register-video",
+      element: <RegisterVideoSubmission />,
+    },
+    {
+      path: "/upload-failed",
+      element: <VideoUploadFailure />,
     }
 
 

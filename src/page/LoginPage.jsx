@@ -68,38 +68,54 @@ const LoginPage = () => {
   };
 
   return (
-    <div className='w-[100%] min-h-screen relative bg-backgroundColor'>
-      <section className='w-[100%] h-screen'>
-        <LoginHeaderComponent/>
-        <div className='w-[40rem] px-[5rem] py-[10rem] min-h-screen flex flex-col gap-[4rem]'>
-          <form onSubmit={handleSubmit} className='flex flex-col gap-5' noValidate>
-            <h1 className='text-textWhiteColor text-[1.8125rem]'>WELCOME BACK</h1>
-            <div className='flex flex-col gap-2'>
-              <input
-                className='border-b-2 border-textColor text-textWhiteColor py-4 text-[1.125rem] outline-none bg-backgroundColor w-[100%]'
-                type="text"
-                name="emailOrPhone"
-                value={formData.emailOrPhone}
-                onChange={handleInputChange}
-                placeholder='Email Or Mobile Number'
-                aria-label="Email or Mobile Number"
-                required
-              />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-            </div>
-            <button 
-              className='bg-textWhiteColor w-[93%] font-bold py-4 disabled:opacity-50'
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? 'SENDING OTP...' : 'GET OTP'}
-            </button>
-            <ForgotAndRegisterCompnent />
-          </form>
+    <div className='min-h-screen bg-backgroundColor flex flex-col lg:flex-row'>
+      {/* Login/Form Section */}
+      <section className='w-full lg:w-1/2 min-h-screen flex flex-col'>
+        <LoginHeaderComponent />
+        
+        <div className='flex-grow flex items-center justify-center px-4 sm:px-8 md:px-12 py-6'>
+          <div className='w-full max-w-md'>
+            <form onSubmit={handleSubmit} className='flex flex-col gap-5 w-full' noValidate>
+              <h1 className='text-textWhiteColor text-xl sm:text-2xl md:text-[1.8125rem] font-bold'>
+                WELCOME BACK
+              </h1>
+              <div className='flex flex-col gap-2 w-full'>
+                <input
+                  className='border-b-2 border-textColor text-textWhiteColor py-3 md:py-4 text-sm md:text-[1.125rem] outline-none bg-backgroundColor w-full'
+                  type="text"
+                  name="emailOrPhone"
+                  value={formData.emailOrPhone}
+                  onChange={handleInputChange}
+                  placeholder='Email Or Mobile Number'
+                  aria-label="Email or Mobile Number"
+                  required
+                />
+                {error && <p className="text-red-500 text-xs sm:text-sm">{error}</p>}
+              </div>
+              <button 
+                className='bg-textWhiteColor w-full font-bold py-3 md:py-4 rounded-sm transition-opacity hover:opacity-90 disabled:opacity-50 text-sm md:text-base'
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? 'SENDING OTP...' : 'GET OTP'}
+              </button>
+              <ForgotAndRegisterCompnent />
+            </form>
+          </div>
         </div>
+        
+        <p className='text-textWhiteColor text-center px-4 sm:px-6 py-4 lg:hidden text-xs'>
+          © {new Date().getFullYear()} MAJORCOLURS, ALL RIGHTS RESERVED
+        </p>
       </section>
-      <LoginComponentImageSection imgUrl={loginImage}/>
-      <p className='text-textWhiteColor px-[8rem] text-[0.7rem]'>© 2025 MAJORCOLURS, ALL RIGHTS RESERVED</p>
+      
+      {/* Image Section */}
+      <LoginComponentImageSection imgUrl={loginImage} />
+      
+      {/* Footer - only visible on desktop */}
+      <p className='hidden lg:block text-textWhiteColor text-center absolute bottom-4 left-0 right-0 text-[0.7rem]'>
+        © {new Date().getFullYear()} MAJORCOLURS, ALL RIGHTS RESERVED
+      </p>
     </div>
   )
 }

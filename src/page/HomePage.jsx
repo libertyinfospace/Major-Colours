@@ -6,7 +6,6 @@ const HomePage = () => {
     <div className="w-[100%] bg-backgroundColor flex gap-10 flex-col justify-center items-center font-nunito">
         <HomeComponent/>
         <section className='w-[90%] relative top-[150px]  mx-auto'>
-          {/* <h1 className="text-white">hello</h1> */}
           <RankCriteriaComponent/>
         </section>
         <div className='w-[90%] relative top-[150px] border-b-2 border-textColor flex justify-center items-center py-[70px] mx-auto '>
