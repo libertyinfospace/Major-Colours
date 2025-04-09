@@ -12,6 +12,7 @@ import CreateNewPasswordPage from './page/CreateNewPasswordPage';
 import RegisterPage from './page/RegisterPage';
 import RegisterVideoSubmission from './page/RegisterVideoSubmission';
 import VideoUploadFailure from './page/VideoUploadFailure';
+import ProfilePage from './page/ProfilePage';
 
 function App() {
 
@@ -55,6 +56,10 @@ function App() {
     {
       path: "/register-video",
       element: <RegisterVideoSubmission />,
+    },
+    {
+      path: "/profile",
+      element: <ProfilePage />,
     },
     {
       path: "/upload-failed",
