@@ -60,7 +60,7 @@ const HomeComponent = () => {
       <div className="w-full max-w-[1200px] px-4 flex justify-center items-center">
         <motion.h1
           id="heading1"
-          className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl leading-tight font-bold text-center mx-auto"
+          className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl leading-tight font-black text-center mx-auto"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}

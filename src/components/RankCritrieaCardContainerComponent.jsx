@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 
 const RankCritrieaCardContainerComponent = () => {
   const dummyData = useSelector((state) => state.active.rankCriteriaData)
+  const activeRank = useSelector((state) => state.active.rankCretriaActiveState)
   const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   const containerRef = useRef(null)
   const contentRef = useRef(null)
@@ -49,7 +50,7 @@ const RankCritrieaCardContainerComponent = () => {
       >
         <div 
           ref={contentRef} 
-          className="flex items-center w-[100%]  justify-between px-4"
+          className="flex items-center w-[100%] justify-between px-4"
         >
           {dummyData.map((ele, idx) => (
             <React.Fragment key={`container-${idx}`}>
@@ -64,7 +65,10 @@ const RankCritrieaCardContainerComponent = () => {
               
               {idx < dummyData.length - 1 && (
                 <div className={`flex-shrink-0 ${isLargeScreen ? 'mx-6' : 'mx-4'}`}>
-                  <RankCriteriaOrComponent key={`or-${idx}`} />
+                  <RankCriteriaOrComponent 
+                    key={`or-${idx}`} 
+                    rankType={activeRank?.name1 || ''}
+                  />
                 </div>
               )}
             </React.Fragment>
@@ -72,7 +76,7 @@ const RankCritrieaCardContainerComponent = () => {
         </div>
       </div>
     );
-  }, [dummyData, calculateCardWidth, screenWidth]);
+  }, [dummyData, calculateCardWidth, screenWidth, activeRank]);
   
   return (
     <div className='w-full'>

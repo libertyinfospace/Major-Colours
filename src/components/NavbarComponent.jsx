@@ -62,11 +62,9 @@ const NavbarComponent = () => {
             {/* Main Navbar */}
             <div className="w-full">
                 <nav className="font-nunito mx-auto w-[90%] py-4 sm:py-0 sm:h-[99px] text-white flex flex-wrap justify-between items-center">
-                    {/* Logo Section */}
-                    <div className="logo text-2xl font-bold z-30">
-                        <Link to="/" className="hover:text-gray-300 inline-block">
-                            <img className="w-[150px] sm:w-[180px] md:w-[219px]" src={majorColoursLogo} alt="MAJOR-COLOURS" />
-                        </Link>
+                    {/* Logo Section with onClick to navigate to homepage */}
+                    <div className="logo text-2xl font-bold z-30 cursor-pointer" onClick={() => navigate('/')}>
+                        <img className="w-[150px] sm:w-[180px] md:w-[219px]" src={majorColoursLogo} alt="MAJOR-COLOURS" />
                     </div>
 
                     {/* Hamburger Menu Button (visible below 600px) */}
