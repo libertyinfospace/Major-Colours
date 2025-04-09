@@ -1,21 +1,34 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import HomeComponent from "../components/HomeComponent";
 import RankCriteriaComponent from "../components/RankCriteriaComponent";
 
 const HomePage = () => {
   return (
-    <div className="w-[100%] bg-backgroundColor flex gap-10 flex-col justify-center items-center font-nunito">
-        <HomeComponent/>
-        <section className='w-[90%] relative top-[150px]  mx-auto'>
-          <RankCriteriaComponent/>
-        </section>
-        <div className='w-[90%] relative top-[150px] border-b-2 border-textColor flex justify-center items-center py-[70px] mx-auto '>
-            <button className="border-2 py-[15px] px-[80px] font-bold text-white text-2xl">
-                JOIN 
-            </button>
+    <main className="w-full bg-backgroundColor flex flex-col justify-center items-center font-nunito pb-24">
+        {/* Home Section */}
+        <div className="w-full">
+          <HomeComponent />
         </div>
-    </div>
+        
+        {/* Rank Criteria Section */}
+        <section className='w-[90%] md:w-[85%] lg:w-[90%] relative top-[220px] mx-auto mb-20'>
+          <RankCriteriaComponent />
+        </section>
+        
+        {/* Join Button Section */}
+        <section className='w-[90%] md:w-[85%] lg:w-[90%] relative top-[220px] border-b-2 border-textColor flex justify-center items-center py-[50px] sm:py-[70px] mx-auto'>
+            <Link 
+              to="/register"
+              className="border-2 py-[12px] sm:py-[15px] px-[60px] sm:px-[80px] font-bold text-white text-xl sm:text-2xl transition-all duration-300 hover:bg-white hover:text-backgroundColor focus:outline-none focus:ring-2 focus:ring-white inline-block text-center"
+              aria-label="Join now"
+            >
+                JOIN 
+            </Link>
+        </section>
+    </main>
   );
-}
+};
 
-export default HomePage;
+export default React.memo(HomePage);
 // This code defines a HomePage.
