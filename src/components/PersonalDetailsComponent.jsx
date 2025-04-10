@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import InputComponent from './InputComponent'
+import { useNavigate } from 'react-router-dom'
 
 const PersonalDetailsComponent = () => {
+  const navigate = useNavigate();
   // State for form fields
   const [formData, setFormData] = useState({
     email: '',
@@ -148,6 +150,8 @@ const PersonalDetailsComponent = () => {
         console.log('Form submitted:', formData);
         setFormSubmitted(true);
         setIsSubmitting(false);
+        // Redirect to profile page after successful submission
+        navigate('/profile');
       }, 1000);
     } else {
       setIsSubmitting(false);

@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const VideoUploadFailure = () => {
+  const navigate = useNavigate();
+  
   const handleRetry = () => {
-    // Handle retry submission logic here
-    console.log('Retry submission clicked');
+    // Navigate to register-video page
+    navigate('/register-video');
   };
 
   return (
@@ -12,6 +15,10 @@ const VideoUploadFailure = () => {
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase text-center mb-6 sm:mb-8 leading-tight">
           Promotion to the rank of bident has been paused
         </h1>
+
+        <p className="text-[#CCCCCC] text-sm sm:text-base md:text-lg text-center mb-6 sm:mb-8">
+          There might be issues with your video submission that need to be addressed. Please review the following concerns and resubmit your video with improved form and safety measures.
+        </p>
 
         <div className="space-y-4 sm:space-y-6">
           {/* Violation Card 1 */}

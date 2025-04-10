@@ -62,7 +62,7 @@ const ConnectingLine = () => (
   </div>
 );
 
-const SelectedRankAndUploadVideo = () => {
+const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
   const rankCriteriaData = useSelector((state) => state.active?.rankCriteriaData)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const [isGuidelinesModalOpen, setIsGuidelinesModalOpen] = useState(false)
@@ -70,6 +70,7 @@ const SelectedRankAndUploadVideo = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [isTablet, setIsTablet] = useState(false)
   const [isLaptop, setIsLaptop] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
   const [showVideoSubmission, setShowVideoSubmission] = useState(false)
   
   // Enhanced resize effect with more precise breakpoints
@@ -79,6 +80,7 @@ const SelectedRankAndUploadVideo = () => {
       setIsMobile(width < 640);
       setIsTablet(width >= 640 && width < 1024);
       setIsLaptop(width >= 1024 && width < 1440);
+      setIsSmallScreen(width < 765);
     };
     
     // Set initial value
@@ -128,6 +130,25 @@ const SelectedRankAndUploadVideo = () => {
         -webkit-overflow-scrolling: touch;
       }
       
+      /* Fix for screens under 765px */
+      @media (max-width: 764px) {
+        .card-container {
+          min-width: 100%;
+          overflow-x: auto !important;
+          padding: 0 !important;
+        }
+        
+        .card-container-inner {
+          min-width: 500px !important;
+          width: max-content !important;
+        }
+        
+        .rank-icons-row {
+          min-width: 500px !important;
+          width: max-content !important;
+        }
+      }
+      
       /* Ensure elements stay visible during horizontal scroll */
       .scroll-padding {
         scroll-padding: 1rem;
@@ -162,7 +183,7 @@ const SelectedRankAndUploadVideo = () => {
 
   // Memoize the rank icons to prevent unnecessary re-renders
   const renderRankIcons = useMemo(() => (
-    <div className="flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible py-2 md:py-4 hide-scrollbar gap-1 xs:gap-2 md:gap-0" 
+    <div className="flex items-center justify-between w-full overflow-x-auto overflow-y-hidden py-2 md:py-4 hide-scrollbar gap-1 xs:gap-2 md:gap-0 rank-icons-row" 
          style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory' }}>
       <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100" style={{ scrollSnapAlign: 'start' }}>
         <RankCriteriaIconComponent 
@@ -209,6 +230,11 @@ const SelectedRankAndUploadVideo = () => {
     
     if (totalCards === 1) return '280px';
     
+    // For small screens, use fixed widths
+    if (isSmallScreen) {
+      return '200px';
+    }
+    
     let containerWidthPx;
     if (isMobile) {
       containerWidthPx = Math.min(280, window.innerWidth * 0.85); // 85% of screen width up to 280px on mobile
@@ -227,7 +253,7 @@ const SelectedRankAndUploadVideo = () => {
     const cardWidth = Math.floor(availableWidthForCards / totalCards);
     
     return `${Math.max(cardWidth, isMobile ? 160 : 200)}px`;
-  }, [rankCriteriaData, isMobile, isTablet, isLaptop]);
+  }, [rankCriteriaData, isMobile, isTablet, isLaptop, isSmallScreen]);
 
   // Memoize the card rendering function
   const renderCardWithOrComponents = useMemo(() => {
@@ -236,7 +262,7 @@ const SelectedRankAndUploadVideo = () => {
     const cardWidth = calculateCardWidth();
     
     return (
-      <div className="flex items-center justify-start md:justify-between w-full overflow-x-auto pb-4 hide-scrollbar gap-2 sm:gap-4" 
+      <div className="flex items-center justify-start md:justify-between w-full overflow-x-auto overflow-y-hidden pb-4 hide-scrollbar gap-2 sm:gap-4 card-container-inner" 
            style={{ WebkitOverflowScrolling: 'touch', paddingLeft: isMobile ? '0.5rem' : '0', scrollSnapType: 'x mandatory' }}>
         {rankCriteriaData.map((ele, idx) => (
           <React.Fragment key={`container-${idx}`}>
@@ -303,18 +329,28 @@ const SelectedRankAndUploadVideo = () => {
     setShowVideoSubmission(false);
   };
 
+  // Determine the top padding based on whether the header is shown
+  const topPaddingClass = hideHeaderFooter ? 'pt-[0.5rem]' : 'pt-[5rem] sm:pt-[6rem] md:pt-[8rem]';
+
+  // Determine section width and padding based on whether it's shown in the ProfilePage or standalone
+  const sectionWidthClass = hideHeaderFooter ? 'w-full' : 'lg:w-[95%] xl:w-[85%] 2xl:w-[75%]';
+  const containerPaddingClass = hideHeaderFooter ? 'px-0' : 'sm:px-[2rem] md:px-[3rem] lg:px-[5rem] px-[1rem]';
+
+  // Adjust spacing for embedded mode
+  const spacingClass = hideHeaderFooter ? 'gap-3 sm:gap-4' : 'gap-8 sm:gap-10 md:gap-12';
+
   return (
     <div className='w-full relative bg-backgroundColor min-h-screen overflow-x-hidden'>
-      <ProfileHeader/>
-      <div className='pt-[5rem] sm:pt-[6rem] md:pt-[8rem] pb-[1rem] sm:px-[2rem] md:px-[3rem] lg:px-[5rem] px-[1rem] flex flex-col lg:gap-6 gap-8 items-center lg:items-start xl:flex-row justify-between w-full'>
+      {!hideHeaderFooter && <ProfileHeader/>}
+      <div className={`${topPaddingClass} pb-[1rem] ${containerPaddingClass} flex flex-col lg:gap-6 gap-8 items-center lg:items-start xl:flex-row justify-between w-full`}>
         {/* <PersonalDetailsComponent/> */}
-        <section className='w-full lg:w-[95%] xl:w-[85%] 2xl:w-[75%] mx-auto flex flex-col gap-8 sm:gap-10 md:gap-12'>
+        <section className={`${sectionWidthClass} mx-auto flex flex-col ${spacingClass}`}>
           {!showVideoSubmission ? (
             <>
-              <div className='w-[95%] sm:w-[90%] md:w-[95%] mx-auto mt-8 xxs:mt-12 xs:mt-6 sm:mt-2 md:mt-0'>
-                <h1 className='text-textWhiteColor w-full text-center pb-3 sm:pb-5 font-bold text-[1.8rem] sm:text-[2rem] md:text-[2.5rem]'>SELECT RANK</h1>
-                <div className='flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible whitespace-nowrap hide-scrollbar smooth-scroll scroll-padding px-1'
-                     style={{ WebkitOverflowScrolling: 'touch', padding: '0.5rem 0' }}>
+              <div className='w-full mx-auto mt-2 xs:mt-1 card-container'>
+                <h1 className='text-textWhiteColor w-full text-center pb-2 font-bold text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem]'>SELECT RANK</h1>
+                <div className='flex items-center justify-between w-full overflow-x-scroll overflow-y-hidden whitespace-nowrap hide-scrollbar smooth-scroll'
+                     style={{ WebkitOverflowScrolling: 'touch', padding: '0.25rem 0' }}>
                       
                   {renderRankIcons}
                 </div>
@@ -322,13 +358,13 @@ const SelectedRankAndUploadVideo = () => {
               
               <SelectRankComponent onVideoClick={handleVideoSubmissionClick}/>
               
-              <h2 className='text-[1.8rem] sm:text-[2rem] md:text-[2.5rem] text-textWhiteColor text-center font-bold mt-2 sm:mt-4'>CRITERIA</h2>
+              <h2 className='text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem] text-textWhiteColor text-center font-bold mt-2'>CRITERIA</h2>
               
-              <div className='w-[95%] sm:w-[90%] md:w-[95%] mx-auto overflow-x-auto hide-scrollbar smooth-scroll scroll-padding'>
+              <div className='w-full mx-auto overflow-x-scroll overflow-y-hidden hide-scrollbar smooth-scroll card-container'>
                 {renderCardWithOrComponents}
               </div>
 
-              <div className="w-[95%] sm:w-[85%] md:w-[75%] lg:w-[60%] mx-auto text-sm sm:text-base md:text-lg lg:text-xl justify-between sm:justify-evenly text-textWhiteColor flex mt-2 sm:mt-4 mb-8 sm:mb-12">
+              <div className="w-full mx-auto text-sm sm:text-base md:text-lg justify-between sm:justify-evenly text-textWhiteColor flex mt-2 mb-4">
                 <div 
                   className="flex gap-2 md:gap-3 cursor-pointer items-center"
                   onClick={handleSampleVideoClick}
@@ -358,7 +394,7 @@ const SelectedRankAndUploadVideo = () => {
           )}
         </section>
       </div>
-      <FooterLinkComponent/>
+      {!hideHeaderFooter && <FooterLinkComponent/>}
       
       {/* Sample Video Modal */}
       {isVideoModalOpen && (

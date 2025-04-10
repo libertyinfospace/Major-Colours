@@ -3,12 +3,33 @@ import ProfileHeader from '../components/ProfileHeader'
 import { FaEdit, FaSpinner, FaCamera, FaUser } from 'react-icons/fa'
 import DressingRoomComponent from '../components/DressingRoomComponent'
 import VideoUploadFailure from './VideoUploadFailure'
+import SelectedRankAndUploadVideo from './SelectedRankAndUploadVideo'
+import SpearIcon from '../assets/logo/Spear-icon-normal.svg'
+import BidentIcon from '../assets/logo/Bident-icon-normal.svg'
+import TridentIcon from '../assets/logo/Trident-icon-normal.svg'
 
 const ProfilePage = () => {
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('profile');
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoSubmitted, setVideoSubmitted] = useState(false);
+  const [currentRank, setCurrentRank] = useState('SPEAR');
+  const [nextRank, setNextRank] = useState('BIDENT');
+
+  // Get the appropriate logo based on the current rank
+  const getRankLogo = (rank) => {
+    switch(rank) {
+      case 'SPEAR':
+        return SpearIcon;
+      case 'BIDENT':
+        return BidentIcon;
+      case 'TRIDENT':
+        return TridentIcon;
+      default:
+        return SpearIcon;
+    }
+  };
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -28,6 +49,15 @@ const ProfilePage = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Simulates successful video submission
+  const handleVideoSuccess = () => {
+    setVideoSubmitted(true);
+    // Progress the rank from SPEAR to BIDENT
+    setCurrentRank(nextRank);
+    // Set next rank in progression
+    setNextRank('TRIDENT');
   };
 
   // Content for the profile tab
@@ -110,8 +140,23 @@ const ProfilePage = () => {
         </div>
         
         {/* Rank */}
-        <div className='pt-2 px-6 text-center'>
-          <h2 className='text-2xl font-extrabold py-2'>RANK</h2>
+        <div className='pt-2 px-6'>
+          <div className='flex flex-row justify-center items-center space-x-4'>
+            {/* Logo Section */}
+            <div className='w-20 h-20 flex items-center justify-center'>
+              <img 
+                src={getRankLogo(currentRank)}
+                alt={`${currentRank} Rank Icon`}
+                className='w-full h-full'
+              />
+            </div>
+            
+            {/* Rank Text Section */}
+            <div className='flex flex-col items-start justify-center'>
+              <div className='text-sm font-medium text-gray-400'>RANK</div>
+              <div className='text-3xl font-bold text-white'>{currentRank}</div>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -120,20 +165,33 @@ const ProfilePage = () => {
         <div className='w-full md:w-[60%] flex items-start md:pl-6'>
           <VideoUploadFailure />
         </div>
+      ) : videoSubmitted ? (
+        <div className='w-full md:w-[60%] h-full overflow-hidden md:ml-4'>
+          <SelectedRankAndUploadVideo hideHeaderFooter={true} />
+        </div>
       ) : (
-        <div className='w-full md:w-[60%] flex flex-col items-center justify-center md:pl-8 md:ml-4'>
+        <div className='w-full md:w-[60%] flex flex-col items-center justify-center md:pl-8 md:ml-4 p-6'>
           <div className='animate-spin text-4xl text-white mb-6'>
             <FaSpinner />
           </div>
-          <h1 className='text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center'>
-            PROMOTING TO THE RANK OF SPEAR
-          </h1>
-          {/* Test button to simulate failure (remove in production) */}
-          <button 
-            className='mt-6 text-sm text-gray-400 underline'
-            onClick={() => setVideoFailed(true)}>
-            Simulate failure
-          </button>
+          <div className='flex flex-col items-center justify-center mb-4'>
+            <h1 className='text-2xl md:text-3xl font-bold text-white text-center mb-2'>
+              PROMOTING TO RANK
+            </h1>
+          </div>
+          {/* Test buttons for demo purposes */}
+          <div className='flex gap-4 mt-6'>
+            <button 
+              className='text-sm text-gray-400 underline'
+              onClick={() => setVideoFailed(true)}>
+              Simulate failure
+            </button>
+            <button 
+              className='text-sm text-gray-400 underline'
+              onClick={handleVideoSuccess}>
+              Simulate success
+            </button>
+          </div>
         </div>
       )}
     </div>
