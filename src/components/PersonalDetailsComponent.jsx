@@ -304,6 +304,37 @@ const PersonalDetailsComponent = () => {
             </label>
             {errors.acceptPrivacy && <p className='text-red-500 text-sm mt-1'>{errors.acceptPrivacy}</p>}
           </div>
+          
+          {/* Submit Button */}
+          <button 
+            type="submit" 
+            className="mt-6 py-3 px-6 bg-textWhiteColor text-backgroundColor font-bold text-lg tracking-wide rounded-sm hover:bg-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-backgroundColor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </div>
+            ) : (
+              "CREATE ACCOUNT"
+            )}
+          </button>
+          
+          {/* Form Error Summary - appears if validation fails */}
+          {Object.values(errors).some(error => error) && (
+            <div className="mt-4 p-3 bg-red-900 bg-opacity-40 border border-red-500 rounded text-white">
+              <p className="text-sm font-medium">Please correct the following errors:</p>
+              <ul className="list-disc list-inside text-sm mt-1">
+                {Object.entries(errors).map(([field, error]) => 
+                  error ? <li key={field}>{error}</li> : null
+                )}
+              </ul>
+            </div>
+          )}
         </form>
       )}
     </div>

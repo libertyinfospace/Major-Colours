@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from 'react'
+import maleIcon from '../assets/logo/male.svg'
+import femaleIcon from '../assets/logo/female.svg'
 
 const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -19,8 +21,8 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
         onMouseEnter={() => setIsHovered(true)}
       >
         <div className='flex justify-between text-white items-center px-4'>
-          <p>{val1}</p>
-          <p>{val2}</p>
+          <p className='flex items-center'><img src={maleIcon} alt="Male" className='w-4 h-4 mr-1' />{val1}</p>
+          <p className='flex items-center'><img src={femaleIcon} alt="Female" className='w-4 h-4 mr-1' />{val2}</p>
         </div>
       </div>
 
@@ -31,7 +33,7 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
         >
           <div className='bg-[#1F2937] p-8 rounded-lg w-[90%] max-w-[600px] min-h-[300px] mx-4'>
             <div className='flex justify-between items-center mb-6'>
-              <h3 className='text-2xl font-bold text-white'>{val1}</h3>
+              <h3 className='text-2xl font-bold text-white flex items-center'><img src={maleIcon} alt="Male" className='w-6 h-6 mr-2' />{val1}</h3>
               <button 
                 onClick={handleClose}
                 className='text-white hover:text-gray-200 text-2xl transition-colors duration-200'

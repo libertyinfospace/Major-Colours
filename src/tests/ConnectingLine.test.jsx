@@ -1,7 +1,7 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import RegisterPage from '../page/RegisterPage'
+import SelectedRankAndUploadVideo from '../page/SelectedRankAndUploadVideo'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import activeSlices from '../store/activeSlices'
@@ -72,11 +72,11 @@ const createTestStore = () => {
   })
 }
 
-describe('Connecting Lines in RegisterPage', () => {
+describe('Connecting Lines in SelectedRankAndUploadVideo', () => {
   it('renders connecting lines with proper styling between icons', () => {
     render(
       <Provider store={createTestStore()}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     

@@ -148,7 +148,7 @@ const NavbarComponent = () => {
             <div className="w-full bg-backgroundColor relative">
                 <div 
                     ref={sportsContainerRef}
-                    className={`w-full px-4 md:px-0 ${needsScroll ? 'overflow-x-auto hide-scrollbar' : 'overflow-x-visible'}`}
+                    className={`w-full md:px-0 ${needsScroll ? 'overflow-x-auto hide-scrollbar' : 'overflow-x-visible'}`}
                 >
                     <div 
                         ref={sportsNavRef}

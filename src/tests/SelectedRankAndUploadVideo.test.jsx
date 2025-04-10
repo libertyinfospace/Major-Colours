@@ -1,7 +1,7 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import RegisterPage from '../page/RegisterPage'
+import SelectedRankAndUploadVideo from '../page/SelectedRankAndUploadVideo'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import activeSlices from '../store/activeSlices'
@@ -132,14 +132,14 @@ const renderWithRedux = (component, store = createTestStore()) => {
   )
 }
 
-describe('RegisterPage', () => {
+describe('SelectedRankAndUploadVideo', () => {
   beforeEach(() => {
     // Reset any runtime handlers
     vi.clearAllMocks()
   })
 
   it('renders all main components correctly', () => {
-    renderWithRedux(<RegisterPage />)
+    renderWithRedux(<SelectedRankAndUploadVideo />)
     
     // Check that all major components are rendered
     expect(screen.getByTestId('profile-header')).toBeInTheDocument()
@@ -169,7 +169,7 @@ describe('RegisterPage', () => {
       ]
     })
     
-    renderWithRedux(<RegisterPage />, customStore)
+    renderWithRedux(<SelectedRankAndUploadVideo />, customStore)
     
     // Should have only 2 rank cards
     const rankCards = screen.getAllByTestId(/rank-card/)
@@ -181,7 +181,7 @@ describe('RegisterPage', () => {
   })
 
   it('renders both sample video and safety guidelines links', () => {
-    renderWithRedux(<RegisterPage />)
+    renderWithRedux(<SelectedRankAndUploadVideo />)
     
     // Check the links at the bottom
     expect(screen.getByText('Sample Video')).toBeInTheDocument()
@@ -198,7 +198,7 @@ describe('RegisterPage', () => {
       rankCriteriaData: null
     })
     
-    renderWithRedux(<RegisterPage />, customStore)
+    renderWithRedux(<SelectedRankAndUploadVideo />, customStore)
     
     // Should not crash when rankCriteriaData is null/undefined
     // Should still render the rest of the page

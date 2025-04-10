@@ -2,11 +2,11 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
-import RegisterPage from '../RegisterPage'
+import SelectedRankAndUploadVideo from '../SelectedRankAndUploadVideo'
 
 const mockStore = configureStore([])
 
-describe('RegisterPage', () => {
+describe('SelectedRankAndUploadVideo', () => {
   let store
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('RegisterPage', () => {
   it('renders without crashing', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
   })
@@ -31,7 +31,7 @@ describe('RegisterPage', () => {
   it('displays the correct title', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     expect(screen.getByText('CRITERIA')).toBeInTheDocument()
@@ -40,7 +40,7 @@ describe('RegisterPage', () => {
   it('shows sample video modal when clicking sample video button', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -53,7 +53,7 @@ describe('RegisterPage', () => {
   it('shows safety guidelines modal when clicking safety guidelines button', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -66,7 +66,7 @@ describe('RegisterPage', () => {
   it('switches between modals correctly', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -84,7 +84,7 @@ describe('RegisterPage', () => {
   it('closes modals correctly', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -102,7 +102,7 @@ describe('RegisterPage', () => {
   it('renders rank criteria cards correctly', () => {
     render(
       <Provider store={store}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     

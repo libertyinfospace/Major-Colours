@@ -1,7 +1,7 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import RegisterPage from '../page/RegisterPage'
+import SelectedRankAndUploadVideo from '../page/SelectedRankAndUploadVideo'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import activeSlices from '../store/activeSlices'
@@ -89,7 +89,7 @@ describe('Alternating RankCriteriaCardComponent and RankCriteriaOrComponent', ()
   it('renders RankCriteriaCardComponent and RankCriteriaOrComponent in alternating pattern in a single line', () => {
     render(
       <Provider store={createTestStore()}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -127,7 +127,7 @@ describe('Alternating RankCriteriaCardComponent and RankCriteriaOrComponent', ()
     
     render(
       <Provider store={fourCriteriaStore}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -147,7 +147,7 @@ describe('Alternating RankCriteriaCardComponent and RankCriteriaOrComponent', ()
     // Render with 3 items to compare
     const { unmount } = render(
       <Provider store={createTestStore()}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     
@@ -169,7 +169,7 @@ describe('Alternating RankCriteriaCardComponent and RankCriteriaOrComponent', ()
     
     render(
       <Provider store={emptyStore}>
-        <RegisterPage />
+        <SelectedRankAndUploadVideo />
       </Provider>
     )
     

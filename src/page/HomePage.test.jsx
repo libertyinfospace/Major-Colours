@@ -56,7 +56,7 @@ describe('HomePage', () => {
     
     // Check if the JOIN link has the correct "to" prop
     const joinLink = screen.getByText('JOIN');
-    expect(joinLink.closest('a')).toHaveAttribute('href', '/register');
+    expect(joinLink.closest('a')).toHaveAttribute('href', '/select-rank');
   });
 
   it('applies correct styling to main sections', () => {

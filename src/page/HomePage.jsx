@@ -19,8 +19,8 @@ const HomePage = () => {
         {/* Join Button Section */}
         <section className='w-[90%] md:w-[85%] lg:w-[90%] relative top-[220px] border-b-2 border-textColor flex justify-center items-center py-[50px] sm:py-[70px] mx-auto'>
             <Link 
-              to="/register"
-              className="border-2 py-[12px] sm:py-[15px] px-[60px] sm:px-[80px] font-bold text-white text-xl sm:text-2xl transition-all duration-300 hover:bg-white hover:text-backgroundColor focus:outline-none focus:ring-2 focus:ring-white inline-block text-center"
+              to="/select-rank"
+              className="w-full sm:w-auto border-2 py-[15px] sm:py-[18px] px-[70px] sm:px-[80px] font-bold text-white text-xl sm:text-2xl transition-all duration-300 hover:bg-white hover:text-backgroundColor focus:outline-none focus:ring-2 focus:ring-white inline-block text-center rounded-md"
               aria-label="Join now"
             >
                 JOIN 

@@ -9,10 +9,11 @@ import store from './store/store';
 import OtpPage from './page/OtpPage';
 import ForgotPasswordPage from './page/ForgotPasswordPage';
 import CreateNewPasswordPage from './page/CreateNewPasswordPage';
-import RegisterPage from './page/RegisterPage';
+import SelectedRankAndUploadVideo from './page/SelectedRankAndUploadVideo';
 import RegisterVideoSubmission from './page/RegisterVideoSubmission';
 import VideoUploadFailure from './page/VideoUploadFailure';
 import ProfilePage from './page/ProfilePage';
+import RegisterPage from './page/RegisterPage';
 
 function App() {
 
@@ -50,8 +51,8 @@ function App() {
       element: <CreateNewPasswordPage />,
     },
     {
-      path: "/register",
-      element: <RegisterPage />,
+      path: "/select-rank",
+      element: <SelectedRankAndUploadVideo />,
     },
     {
       path: "/register-video",
@@ -64,6 +65,10 @@ function App() {
     {
       path: "/upload-failed",
       element: <VideoUploadFailure />,
+    },
+    {
+      path: "/register",
+      element: <RegisterPage />,
     }
 
 

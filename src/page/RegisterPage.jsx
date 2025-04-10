@@ -1,332 +1,101 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import ProfileHeader from '../components/ProfileHeader'
 import PersonalDetailsComponent from '../components/PersonalDetailsComponent'
-import SelectRankComponent from '../components/SelectRankComponent'
-import RankCriteriaIconComponent from '../components/RankCriteriaIconComponent'
-import RankCriteriaLineComponent from '../components/RankCriteriaLineComponent'
-import spearIcon from '../assets/logo/Spear-active-icon.svg'
-import spearIcon1 from '../assets/logo/Spear-icon-normal.svg'
-import bidentIcon from '../assets/logo/Bident-active-icon.svg'
-import bidentIcon1 from '../assets/logo/Bident-icon-normal.svg'
-import tridentIcon from '../assets/logo/Trident-active-icon.svg'
-import tridentIcon1 from '../assets/logo/Trident-icon-normal.svg'
-import excalibur from '../assets/logo/Excalibur-active-icon.svg'
-import excalibur1 from '../assets/logo/Excalibur-icon-normal.svg'
-import dummyData from '../utils/dummyData'
-import { useSelector } from 'react-redux'
-import RankCriteriaCardComponent from '../components/RankCriteriaCardComponent'
-import RankCriteriaOrComponent from '../components/RankCriteriaOrComponent'
-import FooterLinkComponent from '../components/FooterLinkComponent'
-import addIcon from '../assets/logo/add.svg'
-import minusIcon from '../assets/logo/minus.svg'
-import SampleVideoModal from '../components/SampleVideoModal'
-import SafetyGuidelinesModal from '../components/SafetyGuidelinesModal'
-import RegisterVideoSubmission from './RegisterVideoSubmission'
-
-// Define rank icon data outside component to prevent recreation on each render
-const rankIconsData = [
-  { 
-    iconPath: spearIcon, 
-    iconPath1: spearIcon1, 
-    name1: "SPEAR", 
-    name2: "LEVEL 1", 
-    altName: "spear level 1"
-  },
-  { 
-    iconPath: bidentIcon, 
-    iconPath1: bidentIcon1, 
-    name1: "BIDENT", 
-    name2: "LEVEL 2", 
-    altName: "bident level 1"
-  },
-  { 
-    iconPath: tridentIcon, 
-    iconPath1: tridentIcon1, 
-    name1: "TRIDENT", 
-    name2: "LEVEL 3", 
-    altName: "trident level 1"
-  },
-  { 
-    iconPath: excalibur, 
-    iconPath1: excalibur1, 
-    name1: "EXCALIBUR", 
-    name2: "LEVEL 4", 
-    altName: "excalibur level 1"
-  }
-];
-
-// Custom Line component to avoid editing the original RankCriteriaLineComponent
-const ConnectingLine = () => (
-  <div className="flex items-center justify-center flex-shrink-0">
-    <div className="bg-[#484848] h-[2px] relative top-[-20px] w-[100px] md:w-[120px] lg:w-[140px] xl:w-[170px]"></div>
-  </div>
-);
+import { Link } from 'react-router-dom'
 
 const RegisterPage = () => {
-  const rankCriteriaData = useSelector((state) => state.active?.rankCriteriaData)
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
-  const [isGuidelinesModalOpen, setIsGuidelinesModalOpen] = useState(false)
-  const [activeButton, setActiveButton] = useState(null)
-  const [isMobile, setIsMobile] = useState(false)
-  const [isTablet, setIsTablet] = useState(false)
-  const [isLaptop, setIsLaptop] = useState(false)
-  const [showVideoSubmission, setShowVideoSubmission] = useState(false)
-  
-  // Effect to handle window resize for responsive design
+  // Add custom styles for vertical centering on larger screens
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsTablet(width >= 768 && width < 1024);
-      setIsLaptop(width >= 1024 && width < 1440);
-    };
-    
-    // Set initial value
-    handleResize();
-    
-    // Add event listener
-    window.addEventListener('resize', handleResize);
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Add CSS rule to hide webkit scrollbars
-  useEffect(() => {
-    // Create a stylesheet for hiding scrollbars
     const style = document.createElement('style');
     style.innerHTML = `
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      .hide-scrollbar::-webkit-scrollbar {
-        display: none;
+      @media (min-height: 800px) {
+        .content-container {
+          min-height: calc(100vh - 5rem);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
       }
       
-      /* Hide scrollbar for IE, Edge and Firefox */
-      .hide-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+      @media (min-width: 1440px) {
+        .heading-text {
+          font-size: 3.5rem !important;
+        }
+        .subheading-text {
+          font-size: 1.25rem !important;
+        }
+      }
+      
+      @media (max-width: 640px) {
+        .mobile-padding-top {
+          padding-top: 6.5rem !important;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .mobile-padding-top {
+          padding-top: 7rem !important;
+        }
       }
     `;
     document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
+    return () => document.head.removeChild(style);
   }, []);
-
-  // Memoize the rank icons to prevent unnecessary re-renders
-  const renderRankIcons = useMemo(() => (
-    <div className="flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible pb-4 md:pb-0 hide-scrollbar" 
-         style={{ WebkitOverflowScrolling: 'touch' }}>
-      <div className="flex items-center flex-shrink-0">
-        <RankCriteriaIconComponent 
-          {...rankIconsData[0]} 
-          data={dummyData[0]} 
-        />
-      </div>
-      
-      <ConnectingLine />
-      
-      <div className="flex items-center flex-shrink-0">
-        <RankCriteriaIconComponent 
-          {...rankIconsData[1]} 
-          data={dummyData[1]} 
-        />
-      </div>
-      
-      <ConnectingLine />
-      
-      <div className="flex items-center flex-shrink-0">
-        <RankCriteriaIconComponent 
-          {...rankIconsData[2]} 
-          data={dummyData[2]} 
-        />
-      </div>
-      
-      <ConnectingLine />
-      
-      <div className="flex items-center flex-shrink-0">
-        <RankCriteriaIconComponent 
-          {...rankIconsData[3]} 
-          data={dummyData[3]} 
-        />
-      </div>
-    </div>
-  ), []);
-
-  // Memoize the card width calculation
-  const calculateCardWidth = useCallback(() => {
-    if (!rankCriteriaData) return '280px';
-    
-    const totalCards = rankCriteriaData.length;
-    const totalOrComponents = totalCards - 1;
-    
-    if (totalCards === 1) return '280px';
-    
-    let containerWidthPx;
-    if (isMobile) {
-      containerWidthPx = 300;
-    } else if (isTablet) {
-      containerWidthPx = 600;
-    } else if (isLaptop) {
-      containerWidthPx = 750;
-    } else {
-      containerWidthPx = 850;
-    }
-    
-    const orComponentWidth = 50;
-    const totalGapWidth = 20 * (totalCards - 1);
-    
-    const availableWidthForCards = containerWidthPx - (totalOrComponents * orComponentWidth) - totalGapWidth;
-    const cardWidth = Math.floor(availableWidthForCards / totalCards);
-    
-    return `${Math.max(cardWidth, 200)}px`;
-  }, [rankCriteriaData, isMobile, isTablet, isLaptop]);
-
-  // Memoize the card rendering function
-  const renderCardWithOrComponents = useMemo(() => {
-    if (!rankCriteriaData || rankCriteriaData.length === 0) return null;
-    
-    const cardWidth = calculateCardWidth();
-    
-    return (
-      <div className="flex items-center justify-between w-full overflow-x-auto pb-4 hide-scrollbar" 
-           style={{ WebkitOverflowScrolling: 'touch' }}>
-        {rankCriteriaData.map((ele, idx) => (
-          <React.Fragment key={`container-${idx}`}>
-            <div className="flex-shrink-0">
-              <RankCriteriaCardComponent 
-                widthLen={cardWidth}
-                heightLen={'200px'} 
-                key={`card-${idx}`} 
-                {...ele}
-              />
-            </div>
-            
-            {idx < rankCriteriaData.length - 1 && (
-              <div className="flex-shrink-0 mx-2">
-                <RankCriteriaOrComponent key={`or-${idx}`} />
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    );
-  }, [rankCriteriaData, calculateCardWidth]);
-
-  // Memoize modal handlers
-  const handleSampleVideoClick = useCallback(() => {
-    setIsVideoModalOpen(true)
-    setIsGuidelinesModalOpen(false)
-    setActiveButton('video')
-  }, []);
-
-  const handleSafetyGuidelinesClick = useCallback(() => {
-    setIsGuidelinesModalOpen(true)
-    setIsVideoModalOpen(false)
-    setActiveButton('guidelines')
-  }, []);
-
-  const handleCloseSampleVideo = useCallback(() => {
-    setIsVideoModalOpen(false)
-    setActiveButton(null)
-  }, []);
-
-  const handleCloseSafetyGuidelines = useCallback(() => {
-    setIsGuidelinesModalOpen(false)
-    setActiveButton(null)
-  }, []);
-
-  const handleSwitchToGuidelines = useCallback(() => {
-    setIsGuidelinesModalOpen(true)
-    setIsVideoModalOpen(false)
-    setActiveButton('guidelines')
-  }, []);
-
-  const handleSwitchToVideo = useCallback(() => {
-    setIsVideoModalOpen(true)
-    setIsGuidelinesModalOpen(false)
-    setActiveButton('video')
-  }, []);
-
-  const handleVideoSubmissionClick = () => {
-    setShowVideoSubmission(true);
-  };
-
-  const handleBackToCriteria = () => {
-    setShowVideoSubmission(false);
-  };
 
   return (
-    <div className='w-full relative bg-backgroundColor min-h-screen'>
-      <ProfileHeader/>
-      <div className='pt-[8rem] pb-[1rem] sm:px-[3rem] md:px-[4rem] lg:px-[5rem] px-[1rem] 2xl:items-start flex flex-col 2xl:gap-0 gap-10 items-center 2xl:flex-row justify-between w-full min-h-screen'>
-        <PersonalDetailsComponent/>
-        <section className='lg:w-[90%] xl:w-[60rem] w-full flex flex-col gap-12 min-h-screen'>
-          {!showVideoSubmission ? (
-            <>
-              <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
-              <h1 className='text-textWhiteColor w-[100%] text-center pb-5 font-bold text-[2.5rem]'>SELECT RANK</h1>
-                <div className='flex items-center justify-between w-full overflow-x-auto md:overflow-x-visible whitespace-nowrap hide-scrollbar'
-                     style={{ WebkitOverflowScrolling: 'touch' }}>
-                      
-                  {renderRankIcons}
-                </div>
+    <div className='w-full bg-backgroundColor min-h-screen overflow-x-hidden'>
+      <ProfileHeader />
+      <div className='pt-[5.5rem] sm:pt-[6rem] md:pt-[8rem] pb-[2rem] px-[1rem] sm:px-[2rem] md:px-[3rem] lg:px-[5rem] content-container mobile-padding-top'>
+        <div className='w-full max-w-[1200px] mx-auto'>
+          {/* Flex container for the two sections - column on mobile, row on md+ */}
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between md:gap-8 lg:gap-16'>
+            
+            {/* Section 1: Heading and Text - centered vertically and horizontally */}
+            <div className='w-full md:w-2/5 mb-10 md:mb-0 flex flex-col items-center md:items-start justify-center'>
+              <h1 className='text-[1.8rem] sm:text-[2.2rem] md:text-[2.5rem] lg:text-[3rem] text-textWhiteColor font-bold mb-4 md:mb-6 text-center md:text-left heading-text leading-none'>
+                CREATE YOUR ACCOUNT
+              </h1>
+              <p className='text-textColor text-sm sm:text-base md:text-lg text-center md:text-left max-w-[90%] md:max-w-full subheading-text'>
+                Join our community and showcase your skills. Fill in your details to get started and become part of our growing platform.
+              </p>
+            </div>
+            
+            {/* Section 2: Personal Details Component */}
+            <div className='w-full md:w-3/5 flex justify-center'>
+              <div className='w-full max-w-[500px]'>
+                <PersonalDetailsComponent />
               </div>
-              <SelectRankComponent onVideoClick={handleVideoSubmissionClick}/>
-              <h2 className='text-[2rem] md:text-[2.5rem] text-textWhiteColor text-center font-bold'>CRITERIA</h2>
+            </div>
+          </div>
+          
+          {/* Login option for existing users - enhanced styling */}
+          <div className='mt-10 sm:mt-12 md:mt-16 w-full flex justify-center'>
+            <div className='text-center'>
+              <div className='inline-flex items-center gap-2 sm:gap-3'>
+                <p className='text-textColor text-sm sm:text-base'>
+                  Already have an account?
+                </p>
+                <Link 
+                  to="/login" 
+                  className='px-4 py-2 border border-textWhiteColor text-textWhiteColor text-sm sm:text-base font-medium rounded-sm hover:bg-textWhiteColor hover:text-backgroundColor transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50'
+                >
+                  Login Here
+                </Link>
+              </div>
               
-              <div className='w-[95%] md:w-[90%] lg:w-[95%] mx-auto'>
-                {renderCardWithOrComponents}
+              <div className='mt-6 flex items-center justify-center w-full'>
+                <div className='h-px bg-gray-700 w-16 sm:w-24'></div>
+                <p className='mx-3 text-gray-500 text-xs sm:text-sm'>OR</p>
+                <div className='h-px bg-gray-700 w-16 sm:w-24'></div>
               </div>
-
-              <div className="sm:w-[80%] md:w-[70%] lg:w-[60%] w-[95%] mx-auto text-base md:text-lg lg:text-xl sm:justify-evenly justify-between text-textWhiteColor flex">
-                <div 
-                  className="flex gap-2 md:gap-3 cursor-pointer"
-                  onClick={handleSampleVideoClick}
-                >
-                  <img 
-                    src={activeButton === 'video' ? minusIcon : addIcon} 
-                    alt={activeButton === 'video' ? "Close sample video" : "Add sample video"} 
-                  />
-                  <p>Sample Video</p>
-                </div>
-                <div 
-                  className="flex gap-2 md:gap-3 cursor-pointer"
-                  onClick={handleSafetyGuidelinesClick}
-                >
-                  <img 
-                    src={activeButton === 'guidelines' ? minusIcon : addIcon} 
-                    alt={activeButton === 'guidelines' ? "Close safety guidelines" : "Add safety guidelines"} 
-                  />
-                  <p>Safety Guidelines</p>
-                </div>
-              </div>
-            </>
-          ) : (
-            <RegisterVideoSubmission onBack={handleBackToCriteria} />
-          )}
-        </section>
+              
+              <p className='mt-4 text-gray-400 text-xs sm:text-sm max-w-[400px] mx-auto'>
+                By creating an account, you agree to our Terms of Service and Privacy Policy
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <FooterLinkComponent/>
-      
-      {/* Sample Video Modal */}
-      {isVideoModalOpen && (
-        <SampleVideoModal 
-          onClose={handleCloseSampleVideo}
-          isVisible={isVideoModalOpen}
-          onSwitchToGuidelines={handleSwitchToGuidelines}
-        />
-      )}
-
-      {/* Safety Guidelines Modal */}
-      {isGuidelinesModalOpen && (
-        <SafetyGuidelinesModal 
-          onClose={handleCloseSafetyGuidelines}
-          isVisible={isGuidelinesModalOpen}
-          onSwitchToVideo={handleSwitchToVideo}
-        />
-      )}
     </div>
   )
 }
