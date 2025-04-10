@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterVideoSubmission = ({ onBack }) => {
+  const navigate = useNavigate();
   const [isSharingEnabled, setIsSharingEnabled] = useState(false);
   const [instagramHandle, setInstagramHandle] = useState('');
   const [challengeFriend, setChallengeFriend] = useState('');
@@ -19,6 +21,8 @@ const RegisterVideoSubmission = ({ onBack }) => {
   const handleSubmit = () => {
     // Handle submission logic here
     console.log('Video submitted');
+    // Redirect to profile page
+    navigate('/profile');
   };
 
   const handleToggleChange = () => {
