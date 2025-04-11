@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react'
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react'
 import ProfileHeader from '../components/ProfileHeader'
 import PersonalDetailsComponent from '../components/PersonalDetailsComponent'
 import SelectRankComponent from '../components/SelectRankComponent'
@@ -73,6 +73,10 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false)
   const [showVideoSubmission, setShowVideoSubmission] = useState(false)
   
+  // Refs for scrollable containers
+  const rankIconsRef = useRef(null);
+  const criteriaCardsRef = useRef(null);
+  
   // Enhanced resize effect with more precise breakpoints
   useEffect(() => {
     const handleResize = () => {
@@ -92,6 +96,200 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Define and apply custom scrolling styles
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .scrollable-container {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        scroll-snap-type: x proximity;
+        padding-bottom: 10px;
+        width: 100%;
+        /* Hide scrollbars by default */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .scrollable-container::-webkit-scrollbar {
+        display: none;
+      }
+
+      .scrollable-item {
+        scroll-snap-align: start;
+      }
+      
+      /* Rank icons row styles */
+      .rank-icons-row {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        gap: 0.25rem;
+      }
+      
+      /* On large screens, distribute items evenly */
+      @media (min-width: 1024px) {
+        .rank-icons-row {
+          justify-content: space-between;
+          width: 100% !important;
+          max-width: 100%;
+        }
+        
+        .rank-icon-wrapper {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+        }
+      }
+      
+      /* On smaller screens, use scrolling with fixed width */
+      @media (max-width: 1023px) {
+        .rank-icons-row {
+          justify-content: flex-start;
+          width: max-content !important;
+          min-width: 100%;
+        }
+      }
+
+      /* Main bordered container responsive styles */
+      .main-container {
+        width: 100%;
+        padding: 1.5rem;
+        border-radius: 8px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Full width on large screens */
+      @media (min-width: 1280px) {
+        .main-container {
+          width: 90%;
+        }
+      }
+
+      /* Adjusted width for medium screens */
+      @media (min-width: 768px) and (max-width: 1279px) {
+        .main-container {
+          width: 95%;
+        }
+      }
+
+      /* Smaller screens get horizontal scroll */
+      @media (max-width: 767px) {
+        .main-container {
+          width: 100%;
+          padding: 1rem;
+          overflow-x: hidden;
+        }
+        
+        .scrollable-section {
+          overflow-x: auto;
+          width: 100%;
+          white-space: nowrap;
+          padding-bottom: 8px;
+          /* Hide scrollbar on mobile too */
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        
+        .scrollable-section::-webkit-scrollbar {
+          display: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .scrollable-container {
+          padding-left: 4px;
+          padding-right: 4px;
+        }
+        
+        .rank-icons-row, .card-container-inner {
+          min-width: max-content !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => document.head.removeChild(style);
+  }, []);
+
+  // Add touch scroll handling for better mobile experience
+  useEffect(() => {
+    const containers = [rankIconsRef.current, criteriaCardsRef.current];
+    
+    containers.forEach(container => {
+      if (!container) return;
+      
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+      
+      const mouseDownHandler = (e) => {
+        isDown = true;
+        container.style.cursor = 'grabbing';
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+      };
+      
+      const mouseLeaveHandler = () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+      };
+      
+      const mouseUpHandler = () => {
+        isDown = false;
+        container.style.cursor = 'grab';
+      };
+      
+      const mouseMoveHandler = (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2; // Faster scroll
+        container.scrollLeft = scrollLeft - walk;
+      };
+      
+      const touchStartHandler = (e) => {
+        isDown = true;
+        startX = e.touches[0].pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+      };
+      
+      const touchEndHandler = () => {
+        isDown = false;
+      };
+      
+      const touchMoveHandler = (e) => {
+        if (!isDown) return;
+        const x = e.touches[0].pageX - container.offsetLeft;
+        const walk = (x - startX) * 2; // Faster scroll
+        container.scrollLeft = scrollLeft - walk;
+      };
+      
+      container.addEventListener('mousedown', mouseDownHandler);
+      container.addEventListener('mouseleave', mouseLeaveHandler);
+      container.addEventListener('mouseup', mouseUpHandler);
+      container.addEventListener('mousemove', mouseMoveHandler);
+      
+      container.addEventListener('touchstart', touchStartHandler);
+      container.addEventListener('touchend', touchEndHandler);
+      container.addEventListener('touchmove', touchMoveHandler);
+      
+      return () => {
+        container.removeEventListener('mousedown', mouseDownHandler);
+        container.removeEventListener('mouseleave', mouseLeaveHandler);
+        container.removeEventListener('mouseup', mouseUpHandler);
+        container.removeEventListener('mousemove', mouseMoveHandler);
+        
+        container.removeEventListener('touchstart', touchStartHandler);
+        container.removeEventListener('touchend', touchEndHandler);
+        container.removeEventListener('touchmove', touchMoveHandler);
+      };
+    });
+  }, [showVideoSubmission]); // Re-add listeners when content changes
 
   // Define additional CSS for responsive design - will be added to head
   useEffect(() => {
@@ -136,16 +334,26 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
           min-width: 100%;
           overflow-x: auto !important;
           padding: 0 !important;
+          touch-action: pan-x !important;
+          -ms-touch-action: pan-x !important;
         }
         
         .card-container-inner {
-          min-width: 500px !important;
+          min-width: 100% !important;
           width: max-content !important;
+          padding-bottom: 15px !important;
+          touch-action: pan-x !important;
+          -ms-touch-action: pan-x !important;
         }
         
         .rank-icons-row {
-          min-width: 500px !important;
+          min-width: 100% !important;
           width: max-content !important;
+          padding-bottom: 15px !important;
+          padding-left: 10px !important;
+          padding-right: 10px !important;
+          touch-action: pan-x !important;
+          -ms-touch-action: pan-x !important;
         }
       }
       
@@ -153,12 +361,22 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
       .scroll-padding {
         scroll-padding: 1rem;
       }
+      
+      /* Better touch targets for mobile */
+      @media (max-width: 640px) {
+        .touch-target {
+          min-height: 44px;
+          min-width: 44px;
+          display: flex;
+          align-items: center;
+        }
+      }
     `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
 
-  // Add CSS rule to hide webkit scrollbars
+  // Add CSS rule to hide webkit scrollbars (used selectively)
   useEffect(() => {
     // Create a stylesheet for hiding scrollbars
     const style = document.createElement('style');
@@ -183,40 +401,47 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
 
   // Memoize the rank icons to prevent unnecessary re-renders
   const renderRankIcons = useMemo(() => (
-    <div className="flex items-center justify-between w-full overflow-x-auto overflow-y-hidden py-2 md:py-4 hide-scrollbar gap-1 xs:gap-2 md:gap-0 rank-icons-row" 
-         style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory' }}>
-      <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100" style={{ scrollSnapAlign: 'start' }}>
-        <RankCriteriaIconComponent 
-          {...rankIconsData[0]} 
-          data={dummyData[0]} 
-        />
+    <div className="rank-icons-row">
+      <div className="rank-icon-wrapper">
+        <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
+          <RankCriteriaIconComponent 
+            {...rankIconsData[0]} 
+            data={dummyData[0]} 
+          />
+        </div>
       </div>
       
       <ConnectingLine />
       
-      <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100" style={{ scrollSnapAlign: 'start' }}>
-        <RankCriteriaIconComponent 
-          {...rankIconsData[1]} 
-          data={dummyData[1]} 
-        />
+      <div className="rank-icon-wrapper">
+        <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
+          <RankCriteriaIconComponent 
+            {...rankIconsData[1]} 
+            data={dummyData[1]} 
+          />
+        </div>
       </div>
       
       <ConnectingLine />
       
-      <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100" style={{ scrollSnapAlign: 'start' }}>
-        <RankCriteriaIconComponent 
-          {...rankIconsData[2]} 
-          data={dummyData[2]} 
-        />
+      <div className="rank-icon-wrapper">
+        <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
+          <RankCriteriaIconComponent 
+            {...rankIconsData[2]} 
+            data={dummyData[2]} 
+          />
+        </div>
       </div>
       
       <ConnectingLine />
       
-      <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100" style={{ scrollSnapAlign: 'start' }}>
-        <RankCriteriaIconComponent 
-          {...rankIconsData[3]} 
-          data={dummyData[3]} 
-        />
+      <div className="rank-icon-wrapper">
+        <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
+          <RankCriteriaIconComponent 
+            {...rankIconsData[3]} 
+            data={dummyData[3]} 
+          />
+        </div>
       </div>
     </div>
   ), []);
@@ -226,34 +451,17 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     if (!rankCriteriaData) return '280px';
     
     const totalCards = rankCriteriaData.length;
-    const totalOrComponents = totalCards - 1;
     
     if (totalCards === 1) return '280px';
     
-    // For small screens, use fixed widths
-    if (isSmallScreen) {
-      return '200px';
-    }
-    
-    let containerWidthPx;
-    if (isMobile) {
-      containerWidthPx = Math.min(280, window.innerWidth * 0.85); // 85% of screen width up to 280px on mobile
-    } else if (isTablet) {
-      containerWidthPx = Math.min(600, window.innerWidth * 0.8); // 80% of screen width up to 600px on tablet
-    } else if (isLaptop) {
-      containerWidthPx = Math.min(750, window.innerWidth * 0.75); // 75% of screen width up to 750px on laptop
-    } else {
-      containerWidthPx = Math.min(950, window.innerWidth * 0.7); // 70% of screen width up to 950px on desktop
-    }
-    
-    const orComponentWidth = isMobile ? 40 : 50;
-    const totalGapWidth = (isMobile ? 10 : 20) * (totalCards - 1);
-    
-    const availableWidthForCards = containerWidthPx - (totalOrComponents * orComponentWidth) - totalGapWidth;
-    const cardWidth = Math.floor(availableWidthForCards / totalCards);
-    
-    return `${Math.max(cardWidth, isMobile ? 160 : 200)}px`;
-  }, [rankCriteriaData, isMobile, isTablet, isLaptop, isSmallScreen]);
+    // Responsive card width based on screen size
+    if (window.innerWidth < 360) return '180px'; // Extra small mobile
+    if (window.innerWidth < 480) return '200px'; // Small mobile
+    if (window.innerWidth < 640) return '220px'; // Mobile
+    if (window.innerWidth < 768) return '240px'; // Large mobile
+    if (window.innerWidth < 1024) return '260px'; // Tablet
+    return '280px'; // Desktop
+  }, [rankCriteriaData]);
 
   // Memoize the card rendering function
   const renderCardWithOrComponents = useMemo(() => {
@@ -262,11 +470,11 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     const cardWidth = calculateCardWidth();
     
     return (
-      <div className="flex items-center justify-start md:justify-between w-full overflow-x-auto overflow-y-hidden pb-4 hide-scrollbar gap-2 sm:gap-4 card-container-inner" 
-           style={{ WebkitOverflowScrolling: 'touch', paddingLeft: isMobile ? '0.5rem' : '0', scrollSnapType: 'x mandatory' }}>
+      <div className="flex items-center justify-start md:justify-between w-full pb-4 gap-2 sm:gap-4 card-container-inner" 
+           style={{ width: 'max-content' }}>
         {rankCriteriaData.map((ele, idx) => (
           <React.Fragment key={`container-${idx}`}>
-            <div className="flex-shrink-0" style={{ scrollSnapAlign: 'start' }}>
+            <div className="flex-shrink-0 scrollable-item">
               <RankCriteriaCardComponent 
                 widthLen={cardWidth}
                 heightLen={isMobile ? '180px' : isTablet ? '190px' : '200px'} 
@@ -342,16 +550,15 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
   return (
     <div className='w-full relative bg-backgroundColor min-h-screen overflow-x-hidden'>
       {!hideHeaderFooter && <ProfileHeader/>}
-      <div className={`${topPaddingClass} pb-[1rem] ${containerPaddingClass} flex flex-col lg:gap-6 gap-8 items-center lg:items-start xl:flex-row justify-between w-full`}>
+      <div className={`${topPaddingClass} pb-[1rem] ${containerPaddingClass} flex flex-col lg:gap-6 gap-8 items-center justify-between w-full`}>
         {/* <PersonalDetailsComponent/> */}
-        <section className={`${sectionWidthClass} mx-auto flex flex-col ${spacingClass}`}>
+        <section className={`main-container mx-auto flex flex-col ${spacingClass}`}>
           {!showVideoSubmission ? (
             <>
-              <div className='w-full mx-auto mt-2 xs:mt-1 card-container'>
+              <div className='w-full mx-auto mt-2 xs:mt-1 scrollable-section hide-scrollbar'>
                 <h1 className='text-textWhiteColor w-full text-center pb-2 font-bold text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem]'>SELECT RANK</h1>
-                <div className='flex items-center justify-between w-full overflow-x-scroll overflow-y-hidden whitespace-nowrap hide-scrollbar smooth-scroll'
-                     style={{ WebkitOverflowScrolling: 'touch', padding: '0.25rem 0' }}>
-                      
+                <div ref={rankIconsRef} className='scrollable-container whitespace-nowrap hide-scrollbar'
+                     style={{ touchAction: 'pan-x' }}>
                   {renderRankIcons}
                 </div>
               </div>
@@ -360,13 +567,16 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
               
               <h2 className='text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem] text-textWhiteColor text-center font-bold mt-2'>CRITERIA</h2>
               
-              <div className='w-full mx-auto overflow-x-scroll overflow-y-hidden hide-scrollbar smooth-scroll card-container'>
-                {renderCardWithOrComponents}
+              <div className='scrollable-section hide-scrollbar'>
+                <div ref={criteriaCardsRef} className='scrollable-container w-full mx-auto hide-scrollbar'
+                     style={{ touchAction: 'pan-x' }}>
+                  {renderCardWithOrComponents}
+                </div>
               </div>
 
               <div className="w-full mx-auto text-sm sm:text-base md:text-lg justify-between sm:justify-evenly text-textWhiteColor flex mt-2 mb-4">
                 <div 
-                  className="flex gap-2 md:gap-3 cursor-pointer items-center"
+                  className="flex gap-2 md:gap-3 cursor-pointer items-center touch-target"
                   onClick={handleSampleVideoClick}
                 >
                   <img 
@@ -377,7 +587,7 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
                   <p>Sample Video</p>
                 </div>
                 <div 
-                  className="flex gap-2 md:gap-3 cursor-pointer items-center"
+                  className="flex gap-2 md:gap-3 cursor-pointer items-center touch-target"
                   onClick={handleSafetyGuidelinesClick}
                 >
                   <img 
