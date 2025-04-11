@@ -9,7 +9,7 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
   // Add responsive breakpoint detection
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 765);
+      setIsSmallScreen(window.innerWidth < 766);
     };
     
     // Set initial value
@@ -22,20 +22,17 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Add CSS for width control on small screens
+  // Add testing function to monitor breakpoints and widths
+  const testBreakpoints = () => {
+    console.log(`Screen width: ${window.innerWidth}px`);
+    console.log(`Is small screen: ${isSmallScreen}`);
+    console.log(`Card width: ${isSmallScreen ? '250px' : widthLen}`);
+  }
+  
   useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @media (max-width: 764px) {
-        .rank-criteria-card {
-          min-width: 200px !important;
-          width: 200px !important;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-    return () => document.head.removeChild(style);
-  }, []);
+    // For testing purposes
+    testBreakpoints();
+  }, [isSmallScreen, widthLen]);
 
   const handleClose = useCallback(() => setHoveredValue(null), [])
 
@@ -50,12 +47,16 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
     return (kg * 2.20462).toFixed(0);
   }
 
-  // Calculate appropriate width
-  const cardWidth = isSmallScreen ? '200px' : widthLen;
+  // Set a larger fixed width for small screens to prevent overflow
+  const cardWidth = isSmallScreen ? '250px' : widthLen;
 
   return (
     <div 
-      style={{ width: cardWidth, height: heightLen }}
+      style={{ 
+        width: cardWidth, 
+        height: heightLen,
+        minWidth: isSmallScreen ? '250px' : 'auto' 
+      }}
       className='rounded-lg relative flex items-center justify-center bg-[#484848] rank-criteria-card'
     >
       <div className='m-0 flex flex-col gap-0 leading-none text-white items-center'>
@@ -65,18 +66,20 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
       <div 
         className='absolute bottom-0 rounded-b-lg left-0 w-[100%] h-[25px] bg-[#252934]'
       >
-        <div className='flex justify-between text-white items-center md:px-4 px-1'>
+        <div className='flex justify-between text-white items-center md:px-4 px-2'>
           <p 
-            className='flex items-center cursor-pointer' 
+            className='flex items-center cursor-pointer truncate max-w-[45%] text-sm sm:text-base' 
             onMouseEnter={() => setHoveredValue('val1')}
+            title={`${val1}`}
           >
-            <img src={maleIcon} alt="Male" className='w-4 h-4 mr-1' />{val1}
+            <img src={maleIcon} alt="Male" className='w-4 h-4 mr-1 flex-shrink-0' />{val1}
           </p>
           <p 
-            className='flex items-center cursor-pointer'
+            className='flex items-center cursor-pointer truncate max-w-[45%] text-sm sm:text-base'
             onMouseEnter={() => setHoveredValue('val2')}
+            title={`${val2}`}
           >
-            <img src={femaleIcon} alt="Female" className='w-4 h-4 mr-1' />{val2}
+            <img src={femaleIcon} alt="Female" className='w-4 h-4 mr-1 flex-shrink-0' />{val2}
           </p>
         </div>
       </div>

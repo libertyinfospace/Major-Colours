@@ -463,6 +463,57 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     return '280px'; // Desktop
   }, [rankCriteriaData]);
 
+  // Add specific CSS rule to completely eliminate scrollbars
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      /* Completely hide all scrollbars in the application */
+      .card-container-inner,
+      .scrollable-container,
+      .scrollable-section,
+      .rank-icons-row,
+      [class*="scrollable"],
+      .custom-scroll-hide {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+        overflow-y: hidden !important;
+      }
+      
+      /* Target WebKit browsers */
+      .card-container-inner::-webkit-scrollbar,
+      .scrollable-container::-webkit-scrollbar,
+      .scrollable-section::-webkit-scrollbar,
+      .rank-icons-row::-webkit-scrollbar,
+      [class*="scrollable"]::-webkit-scrollbar,
+      .custom-scroll-hide::-webkit-scrollbar,
+      *::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+        visibility: hidden !important;
+      }
+      
+      /* Additional WebKit scrollbar elements */
+      *::-webkit-scrollbar-thumb,
+      *::-webkit-scrollbar-track,
+      *::-webkit-scrollbar-button,
+      *::-webkit-scrollbar-corner,
+      *::-webkit-scrollbar-track-piece {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+        visibility: hidden !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   // Memoize the card rendering function
   const renderCardWithOrComponents = useMemo(() => {
     if (!rankCriteriaData || rankCriteriaData.length === 0) return null;
@@ -470,29 +521,45 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     const cardWidth = calculateCardWidth();
     
     return (
-      <div className="flex items-center justify-start md:justify-between w-full pb-4 gap-2 sm:gap-4 card-container-inner" 
-           style={{ width: 'max-content' }}>
-        {rankCriteriaData.map((ele, idx) => (
-          <React.Fragment key={`container-${idx}`}>
-            <div className="flex-shrink-0 scrollable-item">
-              <RankCriteriaCardComponent 
-                widthLen={cardWidth}
-                heightLen={isMobile ? '180px' : isTablet ? '190px' : '200px'} 
-                key={`card-${idx}`} 
-                {...ele}
-              />
-            </div>
-            
-            {idx < rankCriteriaData.length - 1 && (
-              <div className="flex-shrink-0 mx-1 sm:mx-2">
-                <RankCriteriaOrComponent key={`or-${idx}`} />
+      <div className="w-[95%] sm:w-[90%] md:w-[95%] mx-auto select-rank-container">
+        <div 
+          ref={criteriaCardsRef} 
+          className="flex items-center justify-start pb-4 gap-2 sm:gap-4 card-container-inner custom-scroll-hide"
+          style={{ 
+            width: isSmallScreen ? 'max-content' : '100%',
+            justifyContent: isSmallScreen ? 'flex-start' : 'space-between',
+            touchAction: 'pan-x',
+            overflowX: isSmallScreen ? 'auto' : 'visible',
+            // Force hide scrollbars as inline styles
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none'
+          }}
+        >
+          {rankCriteriaData.map((ele, idx) => (
+            <React.Fragment key={`container-${idx}`}>
+              <div 
+                className={`flex-shrink-0 scrollable-item ${!isSmallScreen && 'flex-1'}`}
+                style={{ minWidth: isSmallScreen ? cardWidth : 'auto' }}
+              >
+                <RankCriteriaCardComponent 
+                  widthLen={isSmallScreen ? cardWidth : '100%'}
+                  heightLen={isMobile ? '180px' : isTablet ? '190px' : '200px'} 
+                  key={`card-${idx}`} 
+                  {...ele}
+                />
               </div>
-            )}
-          </React.Fragment>
-        ))}
+              
+              {idx < rankCriteriaData.length - 1 && (
+                <div className="flex-shrink-0 mx-1 sm:mx-2">
+                  <RankCriteriaOrComponent key={`or-${idx}`} />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     );
-  }, [rankCriteriaData, calculateCardWidth, isMobile, isTablet]);
+  }, [rankCriteriaData, calculateCardWidth, isMobile, isTablet, isSmallScreen]);
 
   // Memoize modal handlers
   const handleSampleVideoClick = useCallback(() => {
@@ -555,10 +622,16 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
         <section className={`main-container mx-auto flex flex-col ${spacingClass}`}>
           {!showVideoSubmission ? (
             <>
-              <div className='w-full mx-auto mt-2 xs:mt-1 scrollable-section hide-scrollbar'>
+              <div className='w-full mx-auto mt-2 xs:mt-1'>
                 <h1 className='text-textWhiteColor w-full text-center pb-2 font-bold text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem]'>SELECT RANK</h1>
-                <div ref={rankIconsRef} className='scrollable-container whitespace-nowrap hide-scrollbar'
-                     style={{ touchAction: 'pan-x' }}>
+                <div ref={rankIconsRef} className='scrollable-container whitespace-nowrap custom-scroll-hide'
+                     style={{ 
+                       touchAction: 'pan-x', 
+                       overflowX: 'auto', 
+                       overflowY: 'hidden',
+                       msOverflowStyle: 'none',
+                       scrollbarWidth: 'none'
+                     }}>
                   {renderRankIcons}
                 </div>
               </div>
@@ -567,11 +640,8 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
               
               <h2 className='text-[1.4rem] sm:text-[1.8rem] md:text-[2.2rem] text-textWhiteColor text-center font-bold mt-2'>CRITERIA</h2>
               
-              <div className='scrollable-section hide-scrollbar'>
-                <div ref={criteriaCardsRef} className='scrollable-container w-full mx-auto hide-scrollbar'
-                     style={{ touchAction: 'pan-x' }}>
-                  {renderCardWithOrComponents}
-                </div>
+              <div className='w-full'>
+                {renderCardWithOrComponents}
               </div>
 
               <div className="w-full mx-auto text-sm sm:text-base md:text-lg justify-between sm:justify-evenly text-textWhiteColor flex mt-2 mb-4">
