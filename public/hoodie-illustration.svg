@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="450" viewBox="0 0 500 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hoodie Outline -->
+  <path d="M250 50 L150 100 L120 270 L130 400 L370 400 L380 270 L350 100 L250 50Z" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Hood -->
+  <path d="M190 100 Q250 120 310 100 Q280 65 250 60 Q220 65 190 100Z" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Sleeves -->
+  <path d="M150 100 L70 180 L100 230 L120 270" stroke="white" stroke-width="2" fill="none"/>
+  <path d="M350 100 L430 180 L400 230 L380 270" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Pocket -->
+  <path d="M180 250 Q250 260 320 250 L320 320 Q250 330 180 320 Z" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Dimension Lines -->
+  
+  <!-- Chest Width -->
+  <line x1="120" y1="180" x2="380" y2="180" stroke="#4A90E2" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="120" y1="170" x2="120" y2="190" stroke="#4A90E2" stroke-width="2"/>
+  <line x1="380" y1="170" x2="380" y2="190" stroke="#4A90E2" stroke-width="2"/>
+  <text x="250" y="165" fill="#4A90E2" font-family="Arial" font-size="14" text-anchor="middle">Chest Width</text>
+  
+  <!-- Front Length -->
+  <line x1="250" y1="60" x2="250" y2="400" stroke="#E2574A" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="240" y1="60" x2="260" y2="60" stroke="#E2574A" stroke-width="2"/>
+  <line x1="240" y1="400" x2="260" y2="400" stroke="#E2574A" stroke-width="2"/>
+  <text x="300" y="230" fill="#E2574A" font-family="Arial" font-size="14" text-anchor="middle">Front Length</text>
+  
+  <!-- Sleeve Length -->
+  <path d="M150 100 L70 180 L100 230" stroke="#57E24A" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  <text x="60" y="150" fill="#57E24A" font-family="Arial" font-size="14" text-anchor="middle">Sleeve Length</text>
+  
+  <!-- Shoulder -->
+  <line x1="150" y1="100" x2="350" y2="100" stroke="#E2A84A" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="250" y="90" fill="#E2A84A" font-family="Arial" font-size="14" text-anchor="middle">Shoulder</text>
+</svg> 

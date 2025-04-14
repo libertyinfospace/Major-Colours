@@ -14,6 +14,8 @@ import RegisterVideoSubmission from './page/RegisterVideoSubmission';
 import VideoUploadFailure from './page/VideoUploadFailure';
 import ProfilePage from './page/ProfilePage';
 import RegisterPage from './page/RegisterPage';
+import DressingRoomPage from './page/DressingRoomPage';
+import CartPage from './page/CartPage';
 
 function App() {
 
@@ -69,17 +71,21 @@ function App() {
     {
       path: "/register",
       element: <RegisterPage />,
+    },
+    {
+      path: "/dressing-room",
+      element: <DressingRoomPage />,
+    },
+    {
+      path: "/cart",
+      element: <CartPage />,
     }
-
-
-
-  ] );
+  ]);
 
   return (
     <Provider store={store}>
-
-    <RouterProvider router={router}>
-    </RouterProvider>
+      <RouterProvider router={router}>
+      </RouterProvider>
     </Provider>
   )
 }

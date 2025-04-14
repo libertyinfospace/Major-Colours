@@ -53,6 +53,29 @@ const createTestStore = (initialState = { commingSoonActive: false }) => {
   });
 };
 
+// Mock the Redux store and reducers
+const mockStore = configureStore({
+  reducer: {
+    active: (state = { commingSoonActive: false }, action) => {
+      switch (action.type) {
+        case 'active/commingSoonActive':
+          return { ...state, commingSoonActive: action.payload };
+        case 'active/toggleCart':
+          return { ...state, cartActive: action.payload };
+        default:
+          return state;
+      }
+    }
+  }
+});
+
+// Mock useNavigate
+const mockedNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedNavigate
+}));
+
 describe('NavbarComponent', () => {
   beforeEach(() => {
     mockNavigate.mockReset();
@@ -326,5 +349,43 @@ describe('NavbarComponent', () => {
     // Check for divider between sections
     const dividers = document.querySelectorAll('.border-t.border-gray-700');
     expect(dividers.length).toBeGreaterThan(0);
+  });
+
+  test('navigates to cart page when cart icon is clicked in mobile menu', () => {
+    renderNavbar();
+    
+    // Open the hamburger menu
+    const menuButton = screen.getByLabelText('Toggle menu');
+    fireEvent.click(menuButton);
+    
+    // Find and click the cart item in the mobile menu
+    const cartItem = screen.getByText('Cart (0)');
+    fireEvent.click(cartItem);
+    
+    // Check if navigation was called with the correct path
+    expect(mockedNavigate).toHaveBeenCalledWith('/cart');
+  });
+
+  test('navigates to cart page when cart icon is clicked in desktop menu', () => {
+    renderNavbar();
+    
+    // Find the cart item in desktop menu (might need to adjust this selector)
+    // Desktop UI is hidden by default, so we need to first make it visible
+    const desktopMenu = document.querySelector('.hidden.sm\\:block');
+    if (desktopMenu) {
+      // Make it visible for testing
+      desktopMenu.classList.remove('hidden');
+      desktopMenu.classList.add('block');
+    }
+    
+    // Now find and click the cart icon in desktop menu
+    const cartItemInDesktop = screen.getAllByRole('listitem').find(
+      item => item.textContent === '0' // Desktop cart shows just the number
+    );
+    
+    fireEvent.click(cartItemInDesktop);
+    
+    // Check if navigation was called with the correct path
+    expect(mockedNavigate).toHaveBeenCalledWith('/cart');
   });
 }); 

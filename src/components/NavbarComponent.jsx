@@ -5,17 +5,37 @@ import { Link } from "react-router-dom";
 import majorColoursLogo from "../assets/img/MAJOR COLOURS-LOGO.png";
 import CommingSoonComponent from "./CommingSoonComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { commingSoonActive } from "../store/activeSlices";
+import { commingSoonActive, toggleCart } from "../store/activeSlices";
 import { useNavigate } from "react-router-dom";
 
 const NavbarComponent = () => {
     const navigate = useNavigate();
     const commingSoonStatus = useSelector((state) => state.active.commingSoonActive);
+    const cartItems = useSelector((state) => state.active.cartItems);
     const dispatch = useDispatch();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [needsScroll, setNeedsScroll] = useState(false);
     const sportsNavRef = useRef(null);
     const sportsContainerRef = useRef(null);
+    
+    // Calculate total items in cart
+    const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+    // Ref for the cart counter element to add animation when it changes
+    const cartCounterRef = useRef(null);
+    
+    // Add animation effect when cart count changes
+    useEffect(() => {
+        if (cartCounterRef.current) {
+            cartCounterRef.current.classList.add('scale-up-animation');
+            const timeout = setTimeout(() => {
+                if (cartCounterRef.current) {
+                    cartCounterRef.current.classList.remove('scale-up-animation');
+                }
+            }, 500);
+            return () => clearTimeout(timeout);
+        }
+    }, [cartItemCount]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -23,6 +43,11 @@ const NavbarComponent = () => {
 
     const navigateTo = (path) => {
         navigate(path);
+        setIsMenuOpen(false);
+    };
+
+    const handleCartClick = () => {
+        dispatch(toggleCart(true));
         setIsMenuOpen(false);
     };
 
@@ -59,6 +84,26 @@ const NavbarComponent = () => {
 
     return(
         <div className="w-full bg-backgroundColor fixed top-0 left-0 z-20">
+            {/* Add animation styles */}
+            <style>
+                {`
+                .scale-up-animation {
+                    animation: scaleUp 0.5s ease-out;
+                }
+                @keyframes scaleUp {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.5); }
+                    100% { transform: scale(1); }
+                }
+                .cart-count {
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 0.875rem;
+                }
+                `}
+            </style>
+            
             {/* Main Navbar */}
             <div className="w-full">
                 <nav className="font-nunito mx-auto w-[90%] py-4 sm:py-0 sm:h-[99px] text-white flex flex-wrap justify-between items-center">
@@ -96,13 +141,18 @@ const NavbarComponent = () => {
                                                     className="w-full"
                                                 >
                                                     <div 
-                                                        onClick={() => navigateTo(item.path)}
+                                                        onClick={item.isCart ? handleCartClick : () => navigateTo(item.path)}
                                                         className="cursor-pointer hover:text-gray-300 text-textColor text-xl py-5 text-left pl-2"
                                                     >
                                                         {item.isCart ? (
                                                             <div className="flex items-center space-x-2">
                                                                 <FaCartPlus className="text-2xl" />
-                                                                <span>Cart (0)</span>
+                                                                <span 
+                                                                    className="cart-count" 
+                                                                    ref={cartItemCount > 0 ? cartCounterRef : null}
+                                                                >
+                                                                    {cartItemCount}
+                                                                </span>
                                                             </div>
                                                         ) : (
                                                             item.name
@@ -126,13 +176,18 @@ const NavbarComponent = () => {
                             {userNavItems.map((item, idx) => (
                                 <li
                                     key={idx}
-                                    onClick={() => navigate(item.path)}
+                                    onClick={item.isCart ? handleCartClick : () => navigate(item.path)}
                                     className="cursor-pointer hover:text-gray-300 text-navbartextSize"
                                 >
                                     {item.isCart ? (
                                         <div className="flex items-center space-x-2">
                                             <FaCartPlus className="text-xl" />
-                                            <p>0</p>
+                                            <span 
+                                                className="cart-count"
+                                                ref={cartItemCount > 0 ? cartCounterRef : null}
+                                            >
+                                                {cartItemCount}
+                                            </span>
                                         </div>
                                     ) : (
                                         item.name

@@ -28,7 +28,8 @@ let intiData = {
         }
     ],
     commingSoonActive:false,
-
+    isCartOpen: false,
+    cartItems: []
 }
 const activeSlices = createSlice({
     name: "activeSlices",
@@ -42,9 +43,51 @@ const activeSlices = createSlice({
         },
         commingSoonActive: (state, action) => {
             state.commingSoonActive = action.payload;
+        },
+        toggleCart: (state, action) => {
+            state.isCartOpen = action.payload !== undefined ? action.payload : !state.isCartOpen;
+        },
+        addToCart: (state, action) => {
+            const { id, name, price, size, image } = action.payload;
+            const existingItem = state.cartItems.find(item => item.name === name && item.size === size);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                state.cartItems.push({
+                    id,
+                    name,
+                    price,
+                    size,
+                    quantity: 1,
+                    image
+                });
+            }
+        },
+        updateCartItem: (state, action) => {
+            const { id, quantity } = action.payload;
+            const itemToUpdate = state.cartItems.find(item => item.id === id);
+            if (itemToUpdate) {
+                itemToUpdate.quantity = Math.max(1, quantity);
+            }
+        },
+        removeCartItem: (state, action) => {
+            state.cartItems = state.cartItems.filter(item => item.id !== action.payload);
+        },
+        clearCart: (state) => {
+            state.cartItems = [];
         }
     },
 })
 
-export const { rankInfoActiveState , rankCriteriaData ,commingSoonActive } = activeSlices.actions;
+export const { 
+    rankInfoActiveState, 
+    rankCriteriaData, 
+    commingSoonActive, 
+    toggleCart,
+    addToCart,
+    updateCartItem,
+    removeCartItem,
+    clearCart 
+} = activeSlices.actions;
 export default activeSlices.reducer;
