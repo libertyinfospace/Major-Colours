@@ -210,18 +210,28 @@ const DressingRoomCart = ({
             {selectedSize && (
               <button 
                 onClick={handleAddToCart}
-                className="w-full py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors duration-200 mt-4"
+                className={`w-full py-3 ${inStock 
+                  ? 'bg-white text-black hover:bg-gray-200' 
+                  : 'bg-gray-500 text-gray-300 cursor-not-allowed'} 
+                  font-medium transition-colors duration-200 mt-4`}
+                disabled={!inStock}
               >
-                ADD TO CART
+                {inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
               </button>
             )}
             
             {/* Shop Pay Button */}
             {selectedSize && (
-              <button className="w-full bg-[#5A31F4] hover:bg-[#4b27d3] text-white py-3 rounded-md flex items-center justify-center space-x-1 transition shadow-sm mt-4">
+              <button 
+                className={`w-full ${inStock 
+                  ? 'bg-[#5A31F4] hover:bg-[#4b27d3]' 
+                  : 'bg-gray-500 cursor-not-allowed'} 
+                  text-white py-3 rounded-md flex items-center justify-center space-x-1 transition shadow-sm mt-4`}
+                disabled={!inStock}
+              >
                 <span>Buy with</span>
                 <span className="font-bold">shop</span>
-                <span className="bg-white text-[#5A31F4] px-1 rounded">Pay</span>
+                <span className={`${inStock ? 'bg-white text-[#5A31F4]' : 'bg-gray-300 text-gray-500'} px-1 rounded`}>Pay</span>
               </button>
             )}
             
