@@ -16,6 +16,7 @@ import ProfilePage from './page/ProfilePage';
 import RegisterPage from './page/RegisterPage';
 import DressingRoomPage from './page/DressingRoomPage';
 import CartPage from './page/CartPage';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
 
@@ -38,49 +39,51 @@ function App() {
     },
     {
       path: "/login",
-      element: <LoginPage />,
+      element: <ScrollToTop><LoginPage /></ScrollToTop>,
     },
     {
       path: "/otp",
-      element: <OtpPage />,
+      element: <ScrollToTop><OtpPage /></ScrollToTop>,
     },
     {
       path: "/forgot",
-      element: <ForgotPasswordPage />,
+      element: <ScrollToTop><ForgotPasswordPage /></ScrollToTop>,
     },
     {
       path: "/newPassword",
-      element: <CreateNewPasswordPage />,
+      element: <ScrollToTop><CreateNewPasswordPage /></ScrollToTop>,
     },
     {
       path: "/select-rank",
-      element: <SelectedRankAndUploadVideo />,
+      element: <ScrollToTop><SelectedRankAndUploadVideo /></ScrollToTop>,
     },
     {
       path: "/register-video",
-      element: <RegisterVideoSubmission />,
+      element: <ScrollToTop><RegisterVideoSubmission /></ScrollToTop>,
     },
     {
       path: "/profile",
-      element: <ProfilePage />,
+      element: <ScrollToTop><ProfilePage /></ScrollToTop>,
     },
     {
       path: "/upload-failed",
-      element: <VideoUploadFailure />,
+      element: <ScrollToTop><VideoUploadFailure /></ScrollToTop>,
     },
     {
       path: "/register",
-      element: <RegisterPage />,
+      element: <ScrollToTop><RegisterPage /></ScrollToTop>,
     },
     {
       path: "/dressing-room",
-      element: <DressingRoomPage />,
+      element: <ScrollToTop><DressingRoomPage /></ScrollToTop>,
     },
     {
       path: "/cart",
-      element: <CartPage />,
+      element: <ScrollToTop><CartPage /></ScrollToTop>,
     }
-  ]);
+  ], {
+    scrollBehavior: "auto"
+  });
 
   return (
     <Provider store={store}>
