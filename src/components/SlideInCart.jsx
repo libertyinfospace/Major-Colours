@@ -258,171 +258,214 @@ const SlideInCart = () => {
     dispatch(addToCart(productToAdd));
   };
 
+  // Add CSS styles for animations in the head when component mounts
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      @keyframes cartSlideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+      }
+      
+      @keyframes cartSlideOut {
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      
+      #cart-sidebar {
+        transform: translateX(${isOpen ? '0' : '100%'});
+        animation: ${isOpen ? 'cartSlideIn 0.4s ease-out forwards' : 'cartSlideOut 0.4s ease-out forwards'};
+      }
+      
+      #cart-backdrop {
+        opacity: ${isOpen ? '1' : '0'};
+        animation: ${isOpen ? 'fadeIn 0.4s ease-out forwards' : 'fadeOut 0.4s ease-out forwards'};
+      }
+    `;
+    
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, [isOpen]);
+
   return (
     <>
-      {isOpen && (
-        <div className="relative">
-          {/* Cart Sidebar */}
-          <div 
-            id="cart-sidebar"
-            className="fixed inset-y-0 right-0 w-full md:w-96 bg-black text-white shadow-lg transform z-[1500] translate-x-0 overflow-y-auto"
-            data-cart-toggle="true"
-          >
-            <div className="flex flex-col h-full">
-              {/* Header Section */}
-              <div className="p-4 border-b border-gray-700">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-medium text-center w-full">YOUR CART</h2>
+      <div className={`relative ${!isOpen ? 'pointer-events-none' : ''}`} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
+        {/* Cart Sidebar */}
+        <div 
+          id="cart-sidebar"
+          className="fixed inset-y-0 right-0 w-full md:w-96 bg-black text-white shadow-lg z-[1500] overflow-y-auto"
+          data-cart-toggle="true"
+          style={{ visibility: 'visible' }}
+        >
+          <div className="flex flex-col h-full">
+            {/* Header Section */}
+            <div className="p-4 border-b border-gray-700">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-medium text-center w-full">YOUR CART</h2>
+                <button 
+                  onClick={handleClose}
+                  className="text-white hover:text-gray-300 transition"
+                  aria-label="Close cart"
+                  data-cart-toggle="true"
+                >
+                  <FaTimes className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
+
+            {cartItems.length === 0 ? (
+              <>
+                {/* Empty State Message */}
+                <div className="flex-grow flex items-center justify-center">
+                  <p className="text-gray-400 font-medium text-lg">YOUR CART IS EMPTY.</p>
+                </div>
+
+                {/* Browse Products Button */}
+                <div className="p-4">
                   <button 
-                    onClick={handleClose}
-                    className="text-white hover:text-gray-300 transition"
-                    aria-label="Close cart"
-                    data-cart-toggle="true"
+                    className="w-full py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors duration-200"
+                    onClick={() => {
+                      dispatch(toggleCart(false));
+                      navigate('/dressing-room');
+                    }}
                   >
-                    <FaTimes className="h-6 w-6" />
+                    BROWSE PRODUCTS
                   </button>
                 </div>
-              </div>
-
-              {cartItems.length === 0 ? (
-                <>
-                  {/* Empty State Message */}
-                  <div className="flex-grow flex items-center justify-center">
-                    <p className="text-gray-400 font-medium text-lg">YOUR CART IS EMPTY.</p>
-                  </div>
-
-                  {/* Browse Products Button */}
-                  <div className="p-4">
-                    <button 
-                      className="w-full py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors duration-200"
-                      onClick={() => {
-                        dispatch(toggleCart(false));
-                        navigate('/dressing-room');
-                      }}
-                    >
-                      BROWSE PRODUCTS
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Cart Items */}
-                  <div className="p-4 overflow-y-auto">
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex py-4 border-b border-gray-700">
-                        <div className="w-24 h-24 bg-gray-800 mr-4 flex-shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-grow">
-                          <div className="flex justify-between">
-                            <h3 className="font-medium">{item.name}</h3>
-                            <p className="font-medium">${item.price}</p>
-                          </div>
-                          <p className="text-gray-400 text-sm mt-1">{item.size}</p>
-                          <div className="flex justify-between items-center mt-3">
-                            <div className="flex items-center">
-                              <button 
-                                onClick={() => handleQuantityChange(item.id, -1)}
-                                className="w-8 h-8 flex items-center justify-center border border-gray-600 text-lg"
-                              >
-                                –
-                              </button>
-                              <span className="mx-2">{item.quantity}</span>
-                              <button 
-                                onClick={() => handleQuantityChange(item.id, 1)}
-                                className="w-8 h-8 flex items-center justify-center border border-gray-600 text-lg"
-                              >
-                                +
-                              </button>
-                            </div>
-                            <button 
-                              onClick={() => handleRemoveItem(item.id)}
-                              className="text-gray-400 hover:text-white text-sm underline"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        </div>
+              </>
+            ) : (
+              <>
+                {/* Cart Items */}
+                <div className="p-4 overflow-y-auto">
+                  {cartItems.map(item => (
+                    <div key={item.id} className="flex py-4 border-b border-gray-700">
+                      <div className="w-24 h-24 bg-gray-800 mr-4 flex-shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
-                    ))}
-                  </div>
-                  
-                  {/* Recommended Products */}
-                  <div className="p-4 border-t border-gray-700">
-                    <h3 className="text-lg font-medium mb-3">YOU MIGHT ALSO LIKE</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      {recommendedProducts.map(product => (
-                        <div key={product.id} className="bg-gray-900 rounded shadow-md p-2">
-                          <div className="w-full h-28 bg-gray-800 mb-2">
-                            <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <p className="font-medium">${product.price}</p>
+                      <div className="flex-grow">
+                        <div className="flex justify-between">
+                          <h3 className="font-medium">{item.name}</h3>
+                          <p className="font-medium">${item.price}</p>
+                        </div>
+                        <p className="text-gray-400 text-sm mt-1">{item.size}</p>
+                        <div className="flex justify-between items-center mt-3">
+                          <div className="flex items-center">
                             <button 
-                              onClick={() => handleAddRecommended(product)}
-                              className="w-6 h-6 flex items-center justify-center bg-white text-black rounded-full"
+                              onClick={() => handleQuantityChange(item.id, -1)}
+                              className="w-8 h-8 flex items-center justify-center border border-gray-600 text-lg"
+                            >
+                              –
+                            </button>
+                            <span className="mx-2">{item.quantity}</span>
+                            <button 
+                              onClick={() => handleQuantityChange(item.id, 1)}
+                              className="w-8 h-8 flex items-center justify-center border border-gray-600 text-lg"
                             >
                               +
                             </button>
                           </div>
+                          <button 
+                            onClick={() => handleRemoveItem(item.id)}
+                            className="text-gray-400 hover:text-white text-sm underline"
+                          >
+                            Remove
+                          </button>
                         </div>
-                      ))}
-                      {recommendedProducts.length === 0 && cartItems.length > 0 && (
-                        <div className="col-span-2 bg-gray-900 rounded shadow-md p-6 flex justify-center items-center">
-                          <p className="text-gray-400 text-center">NO MORE PRODUCTS LEFT FOR THIS RANK</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Recommended Products */}
+                <div className="p-4 border-t border-gray-700">
+                  <h3 className="text-lg font-medium mb-3">YOU MIGHT ALSO LIKE</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {recommendedProducts.map(product => (
+                      <div key={product.id} className="bg-gray-900 rounded shadow-md p-2">
+                        <div className="w-full h-28 bg-gray-800 mb-2">
+                          <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
                         </div>
-                      )}
-                    </div>
+                        <div className="flex justify-between items-center">
+                          <p className="font-medium">${product.price}</p>
+                          <button 
+                            onClick={() => handleAddRecommended(product)}
+                            className="w-6 h-6 flex items-center justify-center bg-white text-black rounded-full"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {recommendedProducts.length === 0 && cartItems.length > 0 && (
+                      <div className="col-span-2 bg-gray-900 rounded shadow-md p-6 flex justify-center items-center">
+                        <p className="text-gray-400 text-center">NO MORE PRODUCTS LEFT FOR THIS RANK</p>
+                      </div>
+                    )}
                   </div>
-                  
-                  {/* Cart Summary */}
-                  <div className="p-4 border-t border-gray-700">
-                    <div className="flex justify-between mb-2">
-                      <p>Subtotal</p>
-                      <p>${subtotal}</p>
-                    </div>
-                    <div className="flex justify-between mb-2">
-                      <p>Shipping</p>
-                      <p className="text-green-500">FREE</p>
-                    </div>
-                    <div className="flex justify-between text-lg font-medium mt-3 mb-3">
-                      <p>CART TOTAL</p>
-                      <p>${subtotal}</p>
-                    </div>
-                    <p className="text-gray-400 text-sm mb-4">Gift cards & promotional codes applied at checkout</p>
-                    <button 
-                      className="w-full py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center"
-                      onClick={() => {
-                        dispatch(toggleCart(false));
-                        navigate('/login');
-                      }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      SECURE CHECKOUT
-                    </button>
-                    <div className="flex justify-center mt-4 space-x-2">
-                      {/* Payment method icons */}
-                      <img src={visaIcon} alt="Visa" className="h-5 object-contain" />
-                      <img src={mastercardIcon} alt="Mastercard" className="h-5 object-contain" />
-                      <img src={amexIcon} alt="American Express" className="h-5 object-contain" />
-                      <img src={paypalIcon} alt="PayPal" className="h-5 object-contain" />
-                      <img src={applePayIcon} alt="Apple Pay" className="h-5 object-contain" />
-                    </div>
+                </div>
+                
+                {/* Cart Summary */}
+                <div className="p-4 border-t border-gray-700">
+                  <div className="flex justify-between mb-2">
+                    <p>Subtotal</p>
+                    <p>${subtotal}</p>
                   </div>
-                </>
-              )}
-            </div>
+                  <div className="flex justify-between mb-2">
+                    <p>Shipping</p>
+                    <p className="text-green-500">FREE</p>
+                  </div>
+                  <div className="flex justify-between text-lg font-medium mt-3 mb-3">
+                    <p>CART TOTAL</p>
+                    <p>${subtotal}</p>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-4">Gift cards & promotional codes applied at checkout</p>
+                  <button 
+                    className="w-full py-3 bg-white text-black font-medium hover:bg-gray-200 transition-colors duration-200 flex items-center justify-center"
+                    onClick={() => {
+                      dispatch(toggleCart(false));
+                      navigate('/login');
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    SECURE CHECKOUT
+                  </button>
+                  <div className="flex justify-center mt-4 space-x-2">
+                    {/* Payment method icons */}
+                    <img src={visaIcon} alt="Visa" className="h-5 object-contain" />
+                    <img src={mastercardIcon} alt="Mastercard" className="h-5 object-contain" />
+                    <img src={amexIcon} alt="American Express" className="h-5 object-contain" />
+                    <img src={paypalIcon} alt="PayPal" className="h-5 object-contain" />
+                    <img src={applePayIcon} alt="Apple Pay" className="h-5 object-contain" />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-
-          {/* Backdrop overlay when cart is open */}
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-[1499]" 
-            onClick={handleClose}
-          />
         </div>
-      )}
+
+        {/* Backdrop overlay when cart is open */}
+        <div 
+          id="cart-backdrop"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[1499]" 
+          onClick={handleClose}
+          style={{ visibility: 'visible' }}
+        />
+      </div>
     </>
   );
 };

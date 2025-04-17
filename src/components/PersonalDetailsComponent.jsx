@@ -10,7 +10,7 @@ const PersonalDetailsComponent = () => {
     password: '',
     fullName: '',
     phoneNumber: '',
-    gender: 'male',
+    gender: null,
     receiveNews: false,
     acceptPrivacy: false
   });
@@ -21,6 +21,7 @@ const PersonalDetailsComponent = () => {
     password: '',
     fullName: '',
     phoneNumber: '',
+    gender: '',
     acceptPrivacy: ''
   });
 
@@ -89,6 +90,14 @@ const PersonalDetailsComponent = () => {
       ...prev,
       gender: e.target.value
     }));
+    
+    // Clear gender error if there was one
+    if (errors.gender) {
+      setErrors(prev => ({
+        ...prev,
+        gender: ''
+      }));
+    }
   };
 
   // Validate form fields
@@ -126,6 +135,12 @@ const PersonalDetailsComponent = () => {
       isValid = false;
     } else if (formData.phoneNumber.length !== 10) {
       newErrors.phoneNumber = 'Please enter a valid 10-digit phone number';
+      isValid = false;
+    }
+
+    // Gender validation
+    if (formData.gender === null) {
+      newErrors.gender = 'Please select a gender';
       isValid = false;
     }
 
@@ -231,9 +246,7 @@ const PersonalDetailsComponent = () => {
                 onChange={handleGenderChange}
                 className="sr-only peer"
               />
-              <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center peer-checked:border-blue-500">
-                <div className="w-2.5 h-2.5 bg-white rounded-full opacity-0 peer-checked:bg-blue-800 transition-opacity duration-200"></div>
-              </div>
+              <div className="w-5 h-5 rounded-full bg-transparent peer-checked:bg-blue-500 border-2 border-white transition-colors duration-200"></div>
               <span>Male</span>
             </label>
 
@@ -247,12 +260,11 @@ const PersonalDetailsComponent = () => {
                 onChange={handleGenderChange}
                 className="sr-only peer"
               />
-              <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center peer-checked:border-pink-500">
-                <div className="w-2.5 h-2.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></div>
-              </div>
+              <div className="w-5 h-5 rounded-full bg-transparent peer-checked:bg-pink-500 border-2 border-white transition-colors duration-200"></div>
               <span>Female</span>
             </label>
           </div>
+          {errors.gender && <p className='text-red-500 text-sm mt-1'>{errors.gender}</p>}
 
           <div className="space-y-4">
             {/* Checkbox 1 */}

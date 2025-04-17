@@ -120,32 +120,13 @@ const DressingRoomCart = ({
       // Dispatch the action to add to cart
       dispatch(addToCart(productToAdd));
       
-      // Create a temporary confirmation message that's very visible
-      const confirmationElement = document.createElement('div');
-      confirmationElement.className = 'fixed top-5 left-1/2 transform -translate-x-1/2 bg-black text-white py-3 px-6 rounded-md shadow-lg z-[2000] text-lg md:text-lg text-sm font-bold whitespace-nowrap';
-      confirmationElement.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
-      confirmationElement.innerText = `✓ Added ${title} (${selectedSize}) to cart`;
-      document.body.appendChild(confirmationElement);
+      // Open the cart slide-in after adding the item
+      dispatch(toggleCart(true));
       
-      // Add CSS animation for the confirmation
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translate(-50%, -20px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        @keyframes fadeOut {
-          from { opacity: 1; transform: translate(-50%, 0); }
-          to { opacity: 0; transform: translate(-50%, -20px); }
-        }
-      `;
-      document.head.appendChild(style);
-      
-      // Remove the confirmation message after 3 seconds
+      // Close the cart after 2.4 seconds
       setTimeout(() => {
-        document.body.removeChild(confirmationElement);
-        document.head.removeChild(style);
-      }, 3000);
+        dispatch(toggleCart(false));
+      }, 2400);
     }
   };
   
