@@ -3,8 +3,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
 import { FaInstagram, FaUserFriends } from "react-icons/fa";
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-const SelectRankComponent = () => {
+const SelectRankComponent = ({ onVideoClick }) => {
+    const navigate = useNavigate();
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [showSocialHandles, setShowSocialHandles] = useState(false);
@@ -126,6 +128,15 @@ const SelectRankComponent = () => {
           instagram: instagramHandle,
           friendInstagram: friendInstagramHandle
         });
+      }
+      
+      // Navigate to profile page
+      console.log('Navigating to profile page');
+      navigate('/profile');
+      
+      // Also call onVideoClick if provided
+      if (onVideoClick && typeof onVideoClick === 'function') {
+        onVideoClick();
       }
     };
 

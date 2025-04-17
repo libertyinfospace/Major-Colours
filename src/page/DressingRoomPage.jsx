@@ -246,6 +246,119 @@ const DressingRoomPage = () => {
     return '100px';
   })();
 
+  // Add event listener for rank selection
+  useEffect(() => {
+    // Only apply this on small screens where scrolling is needed
+    if (screenWidth >= 1000) return;
+    
+    // Function to handle automatic scrolling when rank is clicked
+    const handleRankClick = (event) => {
+      // Check if a rank icon was clicked (img element or its parent)
+      const clickedImg = event.target.closest('img');
+      if (!clickedImg) return;
+      
+      // Find the clicked rank container
+      const rankContainer = clickedImg.closest('.flex-shrink-0');
+      if (!rankContainer) return;
+      
+      // Get the container with all ranks
+      const container = document.querySelector('.overflow-x-auto');
+      if (!container) return;
+      
+      // Find all rank elements (skipping the connecting lines)
+      const allElements = Array.from(container.querySelectorAll('.flex-shrink-0'));
+      
+      // Find the rank index in the list of all elements
+      const rankIndex = allElements.indexOf(rankContainer);
+      if (rankIndex === -1) return;
+      
+      // Determine which rank to scroll to based on the clicked rank
+      let targetRank = null;
+      let targetScrollOptions = {};
+      
+      // For ranks on the left side (first or second), scroll to show the first two ranks
+      if (rankIndex <= 2) {
+        // If on the left, scroll to the beginning
+        targetScrollOptions = {
+          left: 0,
+          behavior: 'smooth'
+        };
+      } 
+      // For the last rank, ensure its fully visible
+      else if (rankIndex >= allElements.length - 2) {
+        // If on the right, scroll to the end
+        targetScrollOptions = {
+          left: container.scrollWidth,
+          behavior: 'smooth'
+        };
+      }
+      // For middle ranks, show the next rank if it exists
+      else if (rankIndex < allElements.length - 2) {
+        // Find the next rank (skip the connecting line)
+        targetRank = allElements[rankIndex + 2];
+        
+        // Check if the next rank is fully visible
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = targetRank.getBoundingClientRect();
+        
+        const isFullyVisible = 
+          targetRect.left >= containerRect.left && 
+          targetRect.right <= containerRect.right;
+        
+        // If not fully visible, scroll to make it visible
+        if (!isFullyVisible) {
+          // Calculate scroll position to center the next rank
+          const scrollLeft = 
+            targetRect.left + 
+            container.scrollLeft - 
+            containerRect.left - 
+            (containerRect.width / 2) + 
+            (targetRect.width / 2);
+          
+          targetScrollOptions = {
+            left: scrollLeft,
+            behavior: 'smooth'
+          };
+        }
+      }
+      
+      // Perform the scroll with a slight delay to allow state changes
+      if (Object.keys(targetScrollOptions).length > 0) {
+        setTimeout(() => {
+          container.scrollTo(targetScrollOptions);
+        }, 100);
+      }
+    };
+    
+    // Add click listener to the rank icons container
+    const container = document.querySelector('.overflow-x-auto');
+    if (container) {
+      container.addEventListener('click', handleRankClick);
+    }
+    
+    // Clean up on unmount
+    return () => {
+      if (container) {
+        container.removeEventListener('click', handleRankClick);
+      }
+    };
+  }, [screenWidth]);
+  
+  // Add CSS for smooth scrolling
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .overflow-x-auto {
+        scroll-behavior: smooth;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-black">
       <ProfileHeader />

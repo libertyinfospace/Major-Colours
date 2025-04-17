@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaChevronLeft, FaChevronRight, FaPlus, FaShoppingBag, FaExchangeAlt, FaRuler } from 'react-icons/fa'
+import { FaChevronLeft, FaChevronRight, FaPlus, FaTimes, FaShoppingBag, FaExchangeAlt, FaRuler } from 'react-icons/fa'
 import { BsDot } from 'react-icons/bs'
 import { useDispatch, useSelector } from 'react-redux'
 import { rankInfoActiveState, rankCriteriaData, addToCart, toggleCart } from '../store/activeSlices'
@@ -17,6 +17,7 @@ const DressingRoomCart = ({
   const [currentSlide, setCurrentSlide] = useState(0);  // Using 0-indexed for array access
   const [selectedSize, setSelectedSize] = useState(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false); // New state for full-screen mode
   const dispatch = useDispatch();
   
   const totalSlides = images.length;
@@ -58,6 +59,28 @@ const DressingRoomCart = ({
     };
   }, [rankData, rankType, dispatch, title]);
   
+  // Add event listener to handle escape key for closing fullscreen
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape' && isFullScreen) {
+        setIsFullScreen(false);
+      }
+    };
+    
+    if (isFullScreen) {
+      document.addEventListener('keydown', handleEscKey);
+      // Prevent scrolling when in full-screen mode
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.body.style.overflow = '';
+    };
+  }, [isFullScreen]);
+  
   const handlePrevSlide = () => {
     setCurrentSlide(prev => (prev === 0 ? totalSlides - 1 : prev - 1));
   };
@@ -72,6 +95,10 @@ const DressingRoomCart = ({
 
   const toggleSizeGuide = () => {
     setShowSizeGuide(prev => !prev);
+  };
+  
+  const toggleFullScreen = () => {
+    setIsFullScreen(prev => !prev);
   };
   
   const handleAddToCart = () => {
@@ -160,8 +187,11 @@ const DressingRoomCart = ({
               {currentSlide + 1} / {totalSlides}
             </div>
             
-            {/* Zoom Icon */}
-            <button className="absolute bottom-4 right-4 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/70 transition z-10">
+            {/* Zoom/Fullscreen Button */}
+            <button 
+              onClick={toggleFullScreen}
+              className="absolute bottom-4 right-4 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/70 transition z-10"
+            >
               <FaPlus />
             </button>
           </div>
@@ -273,12 +303,53 @@ const DressingRoomCart = ({
           </div>
         </div>
       </div>
-
+      
+      {/* Fullscreen Image Overlay */}
+      {isFullScreen && (
+        <div className="fixed inset-0 bg-black z-[1000] flex items-center justify-center">
+          <div className="relative w-full h-full">
+            {/* Fullscreen Image */}
+            <img 
+              src={images[currentSlide]} 
+              alt={`${title} - image ${currentSlide + 1} fullscreen`} 
+              className="w-full h-full object-contain"
+            />
+            
+            {/* Navigation Arrows - larger for fullscreen */}
+            <button 
+              onClick={handlePrevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/70 transition z-10"
+            >
+              <FaChevronLeft size={20} />
+            </button>
+            
+            <button 
+              onClick={handleNextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/70 transition z-10"
+            >
+              <FaChevronRight size={20} />
+            </button>
+            
+            {/* Slide Indicator */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded text-lg z-10">
+              {currentSlide + 1} / {totalSlides}
+            </div>
+            
+            {/* Close Button */}
+            <button 
+              onClick={toggleFullScreen}
+              className="absolute top-6 right-6 bg-black/50 text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-black/70 transition z-10"
+            >
+              <FaTimes size={20} />
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Size Guide Modal */}
-      <SizeGuideModal 
-        isVisible={showSizeGuide}
-        onClose={toggleSizeGuide}
-      />
+      {showSizeGuide && (
+        <SizeGuideModal onClose={toggleSizeGuide} />
+      )}
     </div>
   )
 }
