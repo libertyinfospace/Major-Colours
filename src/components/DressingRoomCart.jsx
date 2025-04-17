@@ -326,7 +326,7 @@ const DressingRoomCart = ({
       
       {/* Size Guide Modal */}
       {showSizeGuide && (
-        <SizeGuideModal onClose={toggleSizeGuide} />
+        <SizeGuideModal onClose={toggleSizeGuide} isVisible={showSizeGuide} />
       )}
     </div>
   )
