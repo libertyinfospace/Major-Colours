@@ -95,11 +95,31 @@ const NavbarComponent = () => {
                     50% { transform: scale(1.5); }
                     100% { transform: scale(1); }
                 }
-                .cart-count {
+                .cart-icon-container {
+                    position: relative;
                     display: inline-flex;
-                    justify-content: center;
                     align-items: center;
-                    font-size: 0.875rem;
+                    justify-content: center;
+                }
+                .cart-count {
+                    position: absolute;
+                    top: -9px;
+                    right: -9px;
+                    background-color: #ffffff;
+                    color: #000000;
+                    border-radius: 50%;
+                    width: 16px;
+                    height: 16px;
+                    font-size: 10px;
+                    line-height: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    z-index: 1;
+                    padding: 0;
+                    box-sizing: content-box;
+                    border: 1px solid #ffffff;
                 }
                 `}
             </style>
@@ -112,14 +132,35 @@ const NavbarComponent = () => {
                         <img className="w-[150px] sm:w-[180px] md:w-[219px]" src={majorColoursLogo} alt="MAJOR-COLOURS" />
                     </div>
 
-                    {/* Hamburger Menu Button (visible below 600px) */}
-                    <button 
-                        className="text-white text-2xl p-2 rounded sm:hidden z-30"
-                        onClick={toggleMenu}
-                        aria-label="Toggle menu"
-                    >
-                        {isMenuOpen ? <FaTimes /> : <FaBars />}
-                    </button>
+                    <div className="flex items-center sm:hidden z-30">
+                        {/* Mobile Cart Icon (visible below 600px) */}
+                        <div 
+                            className="text-white text-2xl p-2 mr-2 cursor-pointer"
+                            onClick={handleCartClick}
+                            aria-label="Cart"
+                        >
+                            <div className="cart-icon-container">
+                                <FaCartPlus className="text-xl" />
+                                {cartItemCount > 0 && (
+                                    <span 
+                                        className="cart-count" 
+                                        ref={cartCounterRef}
+                                    >
+                                        {cartItemCount < 10 ? cartItemCount : '9+'}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Hamburger Menu Button (visible below 600px) */}
+                        <button 
+                            className="text-white text-2xl p-2 rounded"
+                            onClick={toggleMenu}
+                            aria-label="Toggle menu"
+                        >
+                            {isMenuOpen ? <FaTimes /> : <FaBars />}
+                        </button>
+                    </div>
 
                     {/* Mobile Menu (below 600px) - Coming from the right with 80% width */}
                     {isMenuOpen && (
@@ -151,7 +192,7 @@ const NavbarComponent = () => {
                                                                     className="cart-count" 
                                                                     ref={cartItemCount > 0 ? cartCounterRef : null}
                                                                 >
-                                                                    {cartItemCount}
+                                                                    {cartItemCount < 10 ? cartItemCount : '9+'}
                                                                 </span>
                                                             </div>
                                                         ) : (
@@ -180,14 +221,16 @@ const NavbarComponent = () => {
                                     className="cursor-pointer hover:text-gray-300 text-navbartextSize"
                                 >
                                     {item.isCart ? (
-                                        <div className="flex items-center space-x-2">
+                                        <div className="cart-icon-container">
                                             <FaCartPlus className="text-xl" />
-                                            <span 
-                                                className="cart-count"
-                                                ref={cartItemCount > 0 ? cartCounterRef : null}
-                                            >
-                                                {cartItemCount}
-                                            </span>
+                                            {cartItemCount > 0 && (
+                                                <span 
+                                                    className="cart-count"
+                                                    ref={cartCounterRef}
+                                                >
+                                                    {cartItemCount < 10 ? cartItemCount : '9+'}
+                                                </span>
+                                            )}
                                         </div>
                                     ) : (
                                         item.name

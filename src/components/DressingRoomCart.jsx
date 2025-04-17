@@ -189,6 +189,8 @@ const DressingRoomCart = ({
             {/* Size Selection */}
             <div className="space-y-2">
               <p className="text-sm font-medium">SELECT SIZE</p>
+              
+              {/* Size Grid */}
               <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                 {sizes.map(size => (
                   <button
@@ -204,6 +206,16 @@ const DressingRoomCart = ({
                   </button>
                 ))}
               </div>
+              
+              {/* Select Size Button - only show when no size is selected */}
+              {!selectedSize && (
+                <button
+                  className="w-full py-3 px-4 bg-white text-black font-medium hover:bg-gray-200 transition-colors rounded-md mt-3"
+                  onClick={() => setSelectedSize(null)}
+                >
+                  SELECT A SIZE
+                </button>
+              )}
             </div>
             
             {/* Add to Cart Button */}

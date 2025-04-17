@@ -121,9 +121,9 @@ const DressingRoomComponent = () => {
 
   return (
     <div className="w-full min-h-[60vh] font-['Inter','Roboto',sans-serif] flex flex-col sm:flex-row">
-      {/* Section 1: Navigation buttons - stacked on mobile, side by side on larger screens */}
+      {/* Section 1: Navigation buttons - vertical column layout on all screens */}
       <div className="w-full sm:w-1/4 sm:min-w-[180px] pt-4 sm:pt-8 px-4 sm:px-6">
-        <div className="flex sm:block space-x-4 sm:space-x-0 mb-6 sm:mb-8">
+        <div className="flex flex-col space-y-4 sm:space-y-8 mb-6 sm:mb-8">
           <button 
             onClick={() => {
               setActiveSection('purchases');
@@ -135,7 +135,7 @@ const DressingRoomComponent = () => {
           </button>
           <button 
             onClick={() => setActiveSection('returns')}
-            className={`text-base sm:text-lg md:text-xl font-bold ${activeSection === 'returns' ? 'text-white' : 'text-[#999999]'} hover:text-white transition-colors sm:mt-8`}
+            className={`text-base sm:text-lg md:text-xl font-bold ${activeSection === 'returns' ? 'text-white' : 'text-[#999999]'} hover:text-white transition-colors`}
           >
             RETURN
           </button>

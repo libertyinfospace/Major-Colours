@@ -55,6 +55,37 @@ const ProfileHeader = () => {
   
   return (
     <>
+      <style>
+        {`
+          .cart-icon-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .cart-count {
+            position: absolute;
+            top: -9px;
+            right: -9px;
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 1;
+            padding: 0;
+            box-sizing: content-box;
+            border: 1px solid #ffffff;
+          }
+        `}
+      </style>
+
       <div className='w-[100%] flex bg-backgroundColor fixed top-0 py-5 left-0 justify-between px-4 sm:px-[5rem] z-[200]'>
           <img 
             className='w-[9.375rem] cursor-pointer' 
@@ -82,15 +113,35 @@ const ProfileHeader = () => {
                   data-cart-toggle="true"
                   aria-label="Open cart"
               >
-                  <div className="flex items-center space-x-2 relative">
+                  <div className="cart-icon-container">
                       <FaCartPlus className="text-xl"/>
-                      <p className=" ">{cartItemCount}</p>
+                      {cartItemCount > 0 && (
+                        <span className="cart-count">
+                          {cartItemCount < 10 ? cartItemCount : '9+'}
+                        </span>
+                      )}
                   </div>
               </li>
           </ul>
 
           {/* Mobile Menu Button */}
           <div className="sm:hidden flex items-center z-[201]">
+              {/* Mobile Cart Icon */}
+              <div 
+                className="text-textWhiteColor text-2xl mr-4 cursor-pointer"
+                onClick={handleCartClick}
+                aria-label="Cart"
+              >
+                <div className="cart-icon-container">
+                  <FaCartPlus className="text-xl" />
+                  {cartItemCount > 0 && (
+                    <span className="cart-count">
+                      {cartItemCount < 10 ? cartItemCount : '9+'}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
               <button 
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="text-textWhiteColor text-2xl"
@@ -146,8 +197,15 @@ const ProfileHeader = () => {
                                   aria-label="Open cart"
                               >
                                   <div className="flex items-center space-x-3">
-                                      <FaCartPlus className="text-2xl"/>
-                                      <span>Cart ({cartItemCount})</span>
+                                      <div className="cart-icon-container">
+                                        <FaCartPlus className="text-2xl"/>
+                                        {cartItemCount > 0 && (
+                                          <span className="cart-count">
+                                            {cartItemCount < 10 ? cartItemCount : '9+'}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <span>Cart</span>
                                   </div>
                               </li>
                           </ul>

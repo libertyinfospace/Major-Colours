@@ -11,6 +11,7 @@ import  excalibur from '../assets/logo/Excalibur-active-icon.svg'
 import  excalibur1 from '../assets/logo/Excalibur-icon-normal.svg'
 import RankCritrieaCardContainerComponent from './RankCritrieaCardContainerComponent'
 import dummyData from '../utils/dummyData'
+import { useSelector } from 'react-redux'
 
 
 const RankCriteriaComponent = () => {
@@ -20,6 +21,13 @@ const RankCriteriaComponent = () => {
   const containerRef = useRef(null);
   const iconsContainerRef = useRef(null);
   const iconsContentRef = useRef(null);
+  const rankIconRefs = useRef([]);
+  const activeRank = useSelector((state) => state.active.rankCretriaActiveState);
+  
+  // Initialize refs array
+  useEffect(() => {
+    rankIconRefs.current = rankIconRefs.current.slice(0, 4);
+  }, []);
   
   useEffect(() => {
     const handleResize = () => {
@@ -63,6 +71,46 @@ const RankCriteriaComponent = () => {
       observer.disconnect();
     };
   }, []);
+
+  // Scroll to next rank when active rank changes (only on small screens or when scrolling is needed)
+  useEffect(() => {
+    if (activeRank && (needsScroll || !isLargeScreen)) {
+      const currentRankIndex = rankIconsData.findIndex(rank => rank.name1 === activeRank.name1);
+      const nextRankIndex = currentRankIndex + 1;
+      
+      // Only scroll to next rank if it exists and we're on small screen or need scrolling
+      if (nextRankIndex < rankIconsData.length && rankIconRefs.current[nextRankIndex]) {
+        const container = iconsContainerRef.current;
+        const nextElement = rankIconRefs.current[nextRankIndex];
+        
+        if (container && nextElement) {
+          // Check if next element is not fully visible
+          const containerRect = container.getBoundingClientRect();
+          const elementRect = nextElement.getBoundingClientRect();
+          
+          const isFullyVisible = 
+            elementRect.left >= containerRect.left && 
+            elementRect.right <= containerRect.right;
+            
+          // Only scroll if next element is not fully visible
+          if (!isFullyVisible) {
+            // Calculate scroll position to center the next element
+            const scrollLeft = elementRect.left + 
+                            container.scrollLeft - 
+                            containerRect.left - 
+                            (containerRect.width / 2) + 
+                            (elementRect.width / 2);
+                            
+            // Scroll smoothly to the position
+            container.scrollTo({
+              left: scrollLeft,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    }
+  }, [activeRank, needsScroll, isLargeScreen]);
 
   const rankIconsData = useMemo(() => [
     { 
@@ -127,25 +175,25 @@ const RankCriteriaComponent = () => {
           className={contentClasses}
           ref={iconsContentRef}
         >
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" ref={el => rankIconRefs.current[0] = el}>
             <RankCriteriaIconComponent {...rankIconsData[0]} />
           </div>
           <div className="flex-shrink-0" style={{ width: connectingLineWidths }}>
             <RankCriteriaLineComponent />
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" ref={el => rankIconRefs.current[1] = el}>
             <RankCriteriaIconComponent {...rankIconsData[1]} />
           </div>
           <div className="flex-shrink-0" style={{ width: connectingLineWidths }}>
             <RankCriteriaLineComponent />
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" ref={el => rankIconRefs.current[2] = el}>
             <RankCriteriaIconComponent {...rankIconsData[2]} />
           </div>
           <div className="flex-shrink-0" style={{ width: connectingLineWidths }}>
             <RankCriteriaLineComponent />
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0" ref={el => rankIconRefs.current[3] = el}>
             <RankCriteriaIconComponent {...rankIconsData[3]} />
           </div>
         </div>

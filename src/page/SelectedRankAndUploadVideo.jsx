@@ -64,6 +64,7 @@ const ConnectingLine = () => (
 
 const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
   const rankCriteriaData = useSelector((state) => state.active?.rankCriteriaData)
+  const activeRank = useSelector((state) => state.active.rankCretriaActiveState)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const [isGuidelinesModalOpen, setIsGuidelinesModalOpen] = useState(false)
   const [activeButton, setActiveButton] = useState(null)
@@ -76,7 +77,14 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
   // Refs for scrollable containers
   const rankIconsRef = useRef(null);
   const criteriaCardsRef = useRef(null);
+  // Add refs for individual rank icons
+  const rankIconItemRefs = useRef([]);
   
+  // Initialize rank icon refs
+  useEffect(() => {
+    rankIconItemRefs.current = rankIconItemRefs.current.slice(0, 4);
+  }, []);
+
   // Enhanced resize effect with more precise breakpoints
   useEffect(() => {
     const handleResize = () => {
@@ -399,10 +407,50 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
     };
   }, []);
 
+  // Add a new effect to handle scrolling to the next rank when active rank changes
+  useEffect(() => {
+    if (activeRank && isSmallScreen) {
+      const currentRankIndex = rankIconsData.findIndex(rank => rank.name1 === activeRank.name1);
+      const nextRankIndex = currentRankIndex + 1;
+      
+      // Only scroll to next rank if it exists and we're on small screen
+      if (nextRankIndex < rankIconsData.length && rankIconItemRefs.current[nextRankIndex]) {
+        const container = rankIconsRef.current;
+        const nextElement = rankIconItemRefs.current[nextRankIndex];
+        
+        if (container && nextElement) {
+          // Check if next element is not fully visible
+          const containerRect = container.getBoundingClientRect();
+          const elementRect = nextElement.getBoundingClientRect();
+          
+          const isFullyVisible = 
+            elementRect.left >= containerRect.left && 
+            elementRect.right <= containerRect.right;
+            
+          // Only scroll if next element is not fully visible
+          if (!isFullyVisible) {
+            // Calculate scroll position to center the next element
+            const scrollLeft = elementRect.left + 
+                            container.scrollLeft - 
+                            containerRect.left - 
+                            (containerRect.width / 2) + 
+                            (elementRect.width / 2);
+                            
+            // Scroll smoothly to the position
+            container.scrollTo({
+              left: scrollLeft,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    }
+  }, [activeRank, isSmallScreen]);
+
   // Memoize the rank icons to prevent unnecessary re-renders
   const renderRankIcons = useMemo(() => (
     <div className="rank-icons-row">
-      <div className="rank-icon-wrapper">
+      <div className="rank-icon-wrapper" ref={el => rankIconItemRefs.current[0] = el}>
         <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
           <RankCriteriaIconComponent 
             {...rankIconsData[0]} 
@@ -413,7 +461,7 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
       
       <ConnectingLine />
       
-      <div className="rank-icon-wrapper">
+      <div className="rank-icon-wrapper" ref={el => rankIconItemRefs.current[1] = el}>
         <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
           <RankCriteriaIconComponent 
             {...rankIconsData[1]} 
@@ -424,7 +472,7 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
       
       <ConnectingLine />
       
-      <div className="rank-icon-wrapper">
+      <div className="rank-icon-wrapper" ref={el => rankIconItemRefs.current[2] = el}>
         <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
           <RankCriteriaIconComponent 
             {...rankIconsData[2]} 
@@ -435,7 +483,7 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
       
       <ConnectingLine />
       
-      <div className="rank-icon-wrapper">
+      <div className="rank-icon-wrapper" ref={el => rankIconItemRefs.current[3] = el}>
         <div className="flex items-center flex-shrink-0 transform scale-90 xs:scale-95 sm:scale-100 scrollable-item">
           <RankCriteriaIconComponent 
             {...rankIconsData[3]} 
@@ -540,6 +588,7 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
               <div 
                 className={`flex-shrink-0 scrollable-item ${!isSmallScreen && 'flex-1'}`}
                 style={{ minWidth: isSmallScreen ? cardWidth : 'auto' }}
+                data-rank={ele.rankType || ''}
               >
                 <RankCriteriaCardComponent 
                   widthLen={isSmallScreen ? cardWidth : '100%'}
@@ -560,6 +609,44 @@ const SelectedRankAndUploadVideo = ({ hideHeaderFooter = false }) => {
       </div>
     );
   }, [rankCriteriaData, calculateCardWidth, isMobile, isTablet, isSmallScreen]);
+
+  // Add effect to scroll card container when active rank changes
+  useEffect(() => {
+    if (activeRank && isSmallScreen && criteriaCardsRef.current) {
+      // Find cards that match the selected rank
+      const cardElements = criteriaCardsRef.current.querySelectorAll(`[data-rank="${activeRank.name1}"]`);
+      
+      if (cardElements && cardElements.length > 0) {
+        // Get the first card of this rank
+        const firstCard = cardElements[0];
+        
+        // Get the container's boundaries
+        const containerRect = criteriaCardsRef.current.getBoundingClientRect();
+        const cardRect = firstCard.getBoundingClientRect();
+        
+        // Check if the card is fully visible
+        const isFullyVisible = 
+          cardRect.left >= containerRect.left && 
+          cardRect.right <= containerRect.right;
+        
+        // Only scroll if card is not fully visible
+        if (!isFullyVisible) {
+          // Calculate position to center the card
+          const scrollLeft = cardRect.left + 
+                        criteriaCardsRef.current.scrollLeft - 
+                        containerRect.left - 
+                        (containerRect.width / 2) + 
+                        (cardRect.width / 2);
+          
+          // Smooth scroll to the card
+          criteriaCardsRef.current.scrollTo({
+            left: scrollLeft,
+            behavior: 'smooth'
+          });
+        }
+      }
+    }
+  }, [activeRank, isSmallScreen]);
 
   // Memoize modal handlers
   const handleSampleVideoClick = useCallback(() => {
