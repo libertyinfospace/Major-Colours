@@ -38,8 +38,8 @@ const ForgotPasswordPage = () => {
         const data = { email }
         console.log(data)
         
-        // Navigate to new password page
-        navigate('/newPassword')
+        // Navigate to OTP page
+        navigate('/otp')
     }
     
     return (

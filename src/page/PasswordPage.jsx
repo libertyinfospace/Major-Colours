@@ -1,67 +1,43 @@
 import React, { useState } from 'react'
-import loginImage from '../assets/img/loginImage.png'
-import LoginComponentImageSection from '../components/LoginComponentImageSection'
-import ForgotAndRegisterCompnent from '../components/ForgotAndRegisterCompnent'
+import otpImage from '../assets/img/otpImage.png'
 import LoginHeaderComponent from '../components/LoginHeaderComponent'
+import ForgotAndRegisterCompnent from '../components/ForgotAndRegisterCompnent'
+import LoginComponentImageSection from '../components/LoginComponentImageSection'
 import { useNavigate } from 'react-router-dom'
 
-const LoginPage = () => {
+const PasswordPage = () => {
   const navigate = useNavigate();
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [formData, setFormData] = useState({
-    emailOrPhone: ''
-  });
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    const value = e.target.value;
+    setPassword(value);
     setError('');
-  };
-
-  const validateForm = () => {
-    if (!formData.emailOrPhone) {
-      setError('Please enter your email or phone number');
-      return false;
-    }
-    
-    // Basic email validation
-    if (formData.emailOrPhone.includes('@')) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.emailOrPhone)) {
-        setError('Please enter a valid email address');
-        return false;
-      }
-    } else {
-      // Phone number validation (assuming 10 digits)
-      const phoneRegex = /^\d{10}$/;
-      if (!phoneRegex.test(formData.emailOrPhone)) {
-        setError('Please enter a valid 10-digit phone number');
-        return false;
-      }
-    }
-    
-    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!password.trim()) {
+      setError('Please enter your password');
       return;
     }
-
+    
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      // Here you would typically make an API call to your backend
+      // Here you would typically make an API call to verify password
       // For now, we'll just simulate a delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/password');
+      navigate('/'); // Navigate to home page after password verification
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('Invalid password. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +45,7 @@ const LoginPage = () => {
 
   return (
     <div className='min-h-screen bg-backgroundColor flex flex-col lg:flex-row'>
-      {/* Login/Form Section */}
+      {/* Password Form Section */}
       <section className='w-full lg:w-1/2 min-h-screen flex flex-col'>
         <LoginHeaderComponent />
         
@@ -77,17 +53,16 @@ const LoginPage = () => {
           <div className='w-full max-w-md'>
             <form onSubmit={handleSubmit} className='flex flex-col gap-5 w-full' noValidate>
               <h1 className='text-textWhiteColor text-xl sm:text-2xl md:text-[1.8125rem] font-bold'>
-                WELCOME BACK
+                ENTER YOUR PASSWORD
               </h1>
               <div className='flex flex-col gap-2 w-full'>
                 <input
                   className='border-b-2 border-textColor text-textWhiteColor py-3 md:py-4 text-sm md:text-[1.125rem] outline-none bg-backgroundColor w-full'
-                  type="text"
-                  name="emailOrPhone"
-                  value={formData.emailOrPhone}
+                  type="password"
+                  value={password}
                   onChange={handleInputChange}
-                  placeholder='Email Or Mobile Number'
-                  aria-label="Email or Mobile Number"
+                  placeholder='Type Your Password Here'
+                  aria-label="Password"
                   required
                 />
                 {error && <p className="text-red-500 text-xs sm:text-sm">{error}</p>}
@@ -97,7 +72,7 @@ const LoginPage = () => {
                 type="submit"
                 disabled={isLoading}
               >
-                {isLoading ? 'SENDING OTP...' : 'NEXT'}
+                {isLoading ? 'VERIFYING...' : 'LOGIN'}
               </button>
               <ForgotAndRegisterCompnent />
             </form>
@@ -110,14 +85,14 @@ const LoginPage = () => {
       </section>
       
       {/* Image Section */}
-      <LoginComponentImageSection imgUrl={loginImage} />
+      <LoginComponentImageSection imgUrl={otpImage} />
       
       {/* Footer - only visible on desktop */}
       <p className='hidden lg:block text-textWhiteColor text-center absolute bottom-4 left-0 right-0 text-[0.7rem]'>
         © {new Date().getFullYear()} MAJORCOLURS, ALL RIGHTS RESERVED
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default PasswordPage; 

@@ -17,6 +17,7 @@ import RegisterPage from './page/RegisterPage';
 import DressingRoomPage from './page/DressingRoomPage';
 import CartPage from './page/CartPage';
 import ScrollToTop from './components/ScrollToTop';
+import PasswordPage from './page/PasswordPage';
 
 function App() {
 
@@ -44,6 +45,10 @@ function App() {
     {
       path: "/otp",
       element: <ScrollToTop><OtpPage /></ScrollToTop>,
+    },
+    {
+      path: "/password",
+      element: <ScrollToTop><PasswordPage /></ScrollToTop>,
     },
     {
       path: "/forgot",

@@ -38,7 +38,7 @@ const OtpPage = () => {
       // Here you would typically make an API call to verify OTP
       // For now, we'll just simulate a delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/'); // Navigate to home page after OTP verification
+      navigate('/newPassword'); // Navigate to new password page after OTP verification
     } catch (err) {
       setError('Invalid OTP. Please try again.');
     } finally {
