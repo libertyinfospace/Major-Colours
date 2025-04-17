@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import companyLogo from '../assets/img/MAJOR COLOURS-LOGO.png'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleCart } from '../store/activeSlices'
-import SlideInCart from './SlideInCart'
 
 const ProfileHeader = () => {
   const navigate = useNavigate();
@@ -214,9 +213,6 @@ const ProfileHeader = () => {
               </>
           )}
       </div>
-      
-      {/* Include the SlideInCart component directly inside ProfileHeader */}
-      <SlideInCart />
     </>
   )
 }

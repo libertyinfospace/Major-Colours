@@ -283,13 +283,14 @@ const SlideInCart = () => {
       }
       
       #cart-sidebar {
-        transform: translateX(${isOpen ? '0' : '100%'});
-        animation: ${isOpen ? 'cartSlideIn 0.4s ease-out forwards' : 'cartSlideOut 0.4s ease-out forwards'};
+        transform: translateX(100%);
+        animation: ${isOpen ? 'cartSlideIn 0.4s ease-out forwards' : 'none'};
       }
       
       #cart-backdrop {
-        opacity: ${isOpen ? '1' : '0'};
-        animation: ${isOpen ? 'fadeIn 0.4s ease-out forwards' : 'fadeOut 0.4s ease-out forwards'};
+        opacity: 0;
+        animation: ${isOpen ? 'fadeIn 0.4s ease-out forwards' : 'none'};
+        pointer-events: ${isOpen ? 'auto' : 'none'};
       }
     `;
     
@@ -300,15 +301,19 @@ const SlideInCart = () => {
     };
   }, [isOpen]);
 
+  // If not open, don't render anything to avoid flash
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <>
-      <div className={`relative ${!isOpen ? 'pointer-events-none' : ''}`} style={{ visibility: isOpen ? 'visible' : 'hidden' }}>
+      <div className="relative">
         {/* Cart Sidebar */}
         <div 
           id="cart-sidebar"
           className="fixed inset-y-0 right-0 w-full md:w-96 bg-black text-white shadow-lg z-[1500] overflow-y-auto"
           data-cart-toggle="true"
-          style={{ visibility: 'visible' }}
         >
           <div className="flex flex-col h-full">
             {/* Header Section */}
@@ -463,7 +468,6 @@ const SlideInCart = () => {
           id="cart-backdrop"
           className="fixed inset-0 bg-black bg-opacity-50 z-[1499]" 
           onClick={handleClose}
-          style={{ visibility: 'visible' }}
         />
       </div>
     </>

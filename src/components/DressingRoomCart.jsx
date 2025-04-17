@@ -123,10 +123,7 @@ const DressingRoomCart = ({
       // Open the cart slide-in after adding the item
       dispatch(toggleCart(true));
       
-      // Close the cart after 2.4 seconds
-      setTimeout(() => {
-        dispatch(toggleCart(false));
-      }, 2400);
+      // Remove the automatic cart closing to keep it open until user closes it
     }
   };
   

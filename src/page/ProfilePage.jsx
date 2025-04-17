@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import ProfileHeader from '../components/ProfileHeader'
-import { FaEdit, FaSpinner, FaCamera, FaUser } from 'react-icons/fa'
+import { FaEdit, FaSpinner, FaCamera, FaUser, FaCheck, FaTimes } from 'react-icons/fa'
 import DressingRoomComponent from '../components/DressingRoomComponent'
 import VideoUploadFailure from './VideoUploadFailure'
 import SelectedRankAndUploadVideo from './SelectedRankAndUploadVideo'
@@ -18,6 +18,14 @@ const ProfilePage = () => {
   const [videoSubmitted, setVideoSubmitted] = useState(false);
   const [currentRank, setCurrentRank] = useState('SPEAR');
   const [nextRank, setNextRank] = useState('BIDENT');
+  const [userProfile, setUserProfile] = useState({
+    name: 'Soumyadeep Goswami',
+    gender: 'Male',
+    phone: '+91 9792341450',
+    email: 'soumya.goswami@gmail.com'
+  });
+  const [editingField, setEditingField] = useState(null);
+  const [tempValue, setTempValue] = useState('');
 
   // Get the appropriate logo based on the current rank
   const getRankLogo = (rank) => {
@@ -73,6 +81,29 @@ const ProfilePage = () => {
     navigate('/');
   };
 
+  const handleEditClick = (field) => {
+    setEditingField(field);
+    setTempValue(userProfile[field]);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingField) {
+      setUserProfile({
+        ...userProfile,
+        [editingField]: tempValue
+      });
+      setEditingField(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingField(null);
+  };
+
+  const handleInputChange = (e) => {
+    setTempValue(e.target.value);
+  };
+
   // Content for the profile tab
   const ProfileContent = () => (
     <div className='w-full py-6'>
@@ -122,10 +153,39 @@ const ProfilePage = () => {
             <h3 className='font-bold w-full sm:w-1/3 mb-1 sm:mb-0'>Name</h3>
             <div className='flex items-center w-full sm:w-2/3'>
               <span className='text-gray-400 mr-1 sm:hidden'>:</span>
-              <span>Soumyadeep Goswami</span>
-              <button className='ml-2 text-sm text-gray-400'>
-                <FaEdit />
-              </button>
+              {editingField === 'name' ? (
+                <div className='flex items-center w-full'>
+                  <input 
+                    type="text" 
+                    value={tempValue}
+                    onChange={handleInputChange}
+                    className='bg-[#2a2a2a] text-white px-2 py-1 rounded flex-grow mr-2'
+                    autoFocus
+                  />
+                  <button 
+                    className='text-green-500 mr-2'
+                    onClick={handleSaveEdit}
+                  >
+                    <FaCheck />
+                  </button>
+                  <button 
+                    className='text-red-500'
+                    onClick={handleCancelEdit}
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span>{userProfile.name}</span>
+                  <button 
+                    className='ml-2 text-sm text-gray-400 hover:text-white transition-colors'
+                    onClick={() => handleEditClick('name')}
+                  >
+                    <FaEdit />
+                  </button>
+                </>
+              )}
             </div>
           </div>
           
@@ -133,7 +193,41 @@ const ProfilePage = () => {
             <h3 className='font-bold w-full sm:w-1/3 mb-1 sm:mb-0'>Gender</h3>
             <div className='flex items-center w-full sm:w-2/3'>
               <span className='text-gray-400 mr-1 sm:hidden'>:</span>
-              <span>Male</span>
+              {editingField === 'gender' ? (
+                <div className='flex items-center w-full'>
+                  <select 
+                    value={tempValue}
+                    onChange={handleInputChange}
+                    className='bg-[#2a2a2a] text-white px-2 py-1 rounded flex-grow mr-2'
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <button 
+                    className='text-green-500 mr-2'
+                    onClick={handleSaveEdit}
+                  >
+                    <FaCheck />
+                  </button>
+                  <button 
+                    className='text-red-500'
+                    onClick={handleCancelEdit}
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span>{userProfile.gender}</span>
+                  <button 
+                    className='ml-2 text-sm text-gray-400 hover:text-white transition-colors'
+                    onClick={() => handleEditClick('gender')}
+                  >
+                    <FaEdit />
+                  </button>
+                </>
+              )}
             </div>
           </div>
           
@@ -141,7 +235,39 @@ const ProfilePage = () => {
             <h3 className='font-bold w-full sm:w-1/3 mb-1 sm:mb-0'>Phone Number</h3>
             <div className='flex items-center w-full sm:w-2/3'>
               <span className='text-gray-400 mr-1 sm:hidden'>:</span>
-              <span>+91 9792341450</span>
+              {editingField === 'phone' ? (
+                <div className='flex items-center w-full'>
+                  <input 
+                    type="tel" 
+                    value={tempValue}
+                    onChange={handleInputChange}
+                    className='bg-[#2a2a2a] text-white px-2 py-1 rounded flex-grow mr-2'
+                    autoFocus
+                  />
+                  <button 
+                    className='text-green-500 mr-2'
+                    onClick={handleSaveEdit}
+                  >
+                    <FaCheck />
+                  </button>
+                  <button 
+                    className='text-red-500'
+                    onClick={handleCancelEdit}
+                  >
+                    <FaTimes />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span>{userProfile.phone}</span>
+                  <button 
+                    className='ml-2 text-sm text-gray-400 hover:text-white transition-colors'
+                    onClick={() => handleEditClick('phone')}
+                  >
+                    <FaEdit />
+                  </button>
+                </>
+              )}
             </div>
           </div>
           
@@ -149,7 +275,7 @@ const ProfilePage = () => {
             <h3 className='font-bold w-full sm:w-1/3 mb-1 sm:mb-0'>Email ID</h3>
             <div className='flex items-center w-full sm:w-2/3 break-words'>
               <span className='text-gray-400 mr-1 sm:hidden'>:</span>
-              <span>soumya.goswami@gmail.com</span>
+              <span>{userProfile.email}</span>
             </div>
           </div>
         </div>
