@@ -38,8 +38,14 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
 
   // Extract numeric value from val1/val2 if they contain numbers
   const extractNumeric = (val) => {
-    const match = val.toString().match(/(\d+)/);
-    return match ? parseInt(match[0]) : 0;
+    const match = val.toString().match(/(\d+(\.\d+)?)/);
+    return match ? parseFloat(match[0]) : 0;
+  }
+
+  // Extract multiplier from format like "1 x BW"
+  const extractMultiplier = (val) => {
+    const match = val.toString().match(/(\d+(\.\d+)?)\s*x\s*BW/i);
+    return match ? parseFloat(match[1]) : 1;
   }
 
   // Weight conversion function (kg to pounds)
@@ -89,7 +95,7 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
           className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]'
           onMouseLeave={handleClose}
         >
-          <div className='bg-[#1F2937] p-8 rounded-lg w-[90%] max-w-[600px] min-h-[300px] mx-4'>
+          <div className='bg-[#1F2937] p-8 rounded-lg w-[80%] max-w-[500px] min-h-[250px] mx-4 flex flex-col'>
             <div className='flex justify-between items-center mb-6'>
               <h3 className='text-2xl font-bold text-white flex items-center'>
                 {hoveredValue === 'val1' ? (
@@ -109,15 +115,15 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
                 ✕
               </button>
             </div>
-            <div className='text-white space-y-4'>
-              <p className='text-lg leading-relaxed'>
+            <div className='text-white space-y-4 flex-grow flex items-center justify-center'>
+              <p className='text-xl md:text-2xl leading-relaxed text-center'>
                 {hoveredValue === 'val1' ? (
                   <>
-                    Example {extractNumeric(val1)}kg ({kgToPounds(extractNumeric(val1))}lbs) Male with a {name}-{last} of {(extractNumeric(val1) * 0.5).toFixed(0)}kg ({kgToPounds(extractNumeric(val1) * 0.5)}lbs) (0.5 x BW)
+                    Example 50kg (110lbs) Male with a {name}-{last} of {(50 * extractMultiplier(val1)).toFixed(0)}kg ({(50 * extractMultiplier(val1) * 2.2).toFixed(0)}lbs)
                   </>
                 ) : (
                   <>
-                    Example {extractNumeric(val2)}kg ({kgToPounds(extractNumeric(val2))}lbs) Female with a {name}-{last} of {(extractNumeric(val2) * 0.5).toFixed(0)}kg ({kgToPounds(extractNumeric(val2) * 0.5)}lbs) (0.5 x BW)
+                    Example 50kg (110lbs) Female with a {name}-{last} of {(50 * extractMultiplier(val2)).toFixed(0)}kg ({(50 * extractMultiplier(val2) * 2.2).toFixed(0)}lbs)
                   </>
                 )}
               </p>
