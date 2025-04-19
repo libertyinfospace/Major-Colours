@@ -1,24 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react'
 import ProfileHeader from '../components/ProfileHeader'
-import { FaEdit, FaSpinner, FaCamera, FaUser, FaCheck, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaSpinner, FaCamera, FaUser, FaCheck, FaTimes, FaUpload } from 'react-icons/fa'
 import DressingRoomComponent from '../components/DressingRoomComponent'
 import VideoUploadFailure from './VideoUploadFailure'
 import SelectedRankAndUploadVideo from './SelectedRankAndUploadVideo'
 import SpearIcon from '../assets/logo/Spear-icon-normal.svg'
 import BidentIcon from '../assets/logo/Bident-icon-normal.svg'
 import TridentIcon from '../assets/logo/Trident-icon-normal.svg'
-import { useNavigate } from 'react-router-dom'
+import SuccessImage from '../assets/img/otpImage.png'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { updateUserData } from '../store/activeSlices'
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [profileImage, setProfileImage] = useState(null);
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('profile');
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoSubmitted, setVideoSubmitted] = useState(false);
+  const [videoFileSelected, setVideoFileSelected] = useState(null);
+  const [submittingNewVideo, setSubmittingNewVideo] = useState(false);
   const [currentRank, setCurrentRank] = useState('SPEAR');
   const [nextRank, setNextRank] = useState('BIDENT');
   const [userProfile, setUserProfile] = useState({
@@ -31,8 +35,26 @@ const ProfilePage = () => {
   const [tempValue, setTempValue] = useState('');
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(true);
 
+  // Listen for URL changes and set active tab based on query parameter
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const sectionParam = queryParams.get('section');
+    
+    if (sectionParam === 'upgrade-rank') {
+      setActiveTab('upgrade');
+    }
+  }, [location]);
+
   // Check for user data in localStorage on component mount
   useEffect(() => {
+    // Check URL parameters to determine which tab to show initially
+    const queryParams = new URLSearchParams(window.location.search);
+    const sectionParam = queryParams.get('section');
+    
+    if (sectionParam === 'upgrade-rank') {
+      setActiveTab('upgrade');
+    }
+    
     // Get login info from localStorage
     const loginInfoData = localStorage.getItem('loginInfo');
     const storedProfileImage = localStorage.getItem('profileImage');
@@ -186,6 +208,21 @@ const ProfilePage = () => {
     setCurrentRank(nextRank);
     // Set next rank in progression
     setNextRank('TRIDENT');
+    // Reset video submission states
+    setSubmittingNewVideo(false);
+  };
+
+  // Handle try again button click
+  const handleTryAgain = () => {
+    // Reset states and show loading state
+    setVideoSubmitted(false);
+    setVideoFailed(false);
+    setSubmittingNewVideo(true);
+    
+    // Simulate loading for 3 seconds
+    setTimeout(() => {
+      handleVideoSuccess();
+    }, 3000);
   };
 
   // Handle logout
@@ -487,28 +524,67 @@ const ProfilePage = () => {
   // Upgrade Profile component
   const UpgradeProfileContent = () => (
     <div className='py-8 px-4 md:px-6 flex flex-col w-full'>
-      {/* Current Rank Display */}
-      <div className='w-full mb-6'>
-        <div className='bg-[#1a1a1a] p-4 md:p-6 rounded-lg'>
-          <h3 className='text-lg md:text-xl font-semibold mb-3 md:mb-4 text-center'>Current Rank</h3>
-          <div className='flex flex-row items-center justify-center space-x-4'>
-            {/* Logo Section */}
-            <div className='w-16 h-16 md:w-20 md:h-20 flex items-center justify-center'>
-              <img 
-                src={getRankLogo(currentRank)}
-                alt={`${currentRank} Rank Icon`}
-                className='w-full h-full'
-              />
+      {/* Current Rank and Success Image - in same line when videoSubmitted */}
+      {videoSubmitted ? (
+        <div className='w-full flex flex-col md:flex-row gap-6 mb-6'>
+          {/* Current Rank Display */}
+          <div className='w-full md:w-1/2'>
+            <div className='bg-[#1a1a1a] p-4 md:p-6 rounded-lg h-full'>
+              <h3 className='text-lg md:text-xl font-semibold mb-3 md:mb-4 text-center'>Current Rank</h3>
+              <div className='flex flex-row items-center justify-center space-x-4'>
+                {/* Logo Section */}
+                <div className='w-16 h-16 md:w-20 md:h-20 flex items-center justify-center'>
+                  <img 
+                    src={getRankLogo(currentRank)}
+                    alt={`${currentRank} Rank Icon`}
+                    className='w-full h-full'
+                  />
+                </div>
+                
+                {/* Rank Text Section */}
+                <div className='flex flex-col items-start justify-center'>
+                  <div className='text-xs md:text-sm font-medium text-gray-400'>RANK</div>
+                  <div className='text-2xl md:text-3xl font-bold text-white'>{currentRank}</div>
+                </div>
+              </div>
             </div>
-            
-            {/* Rank Text Section */}
-            <div className='flex flex-col items-start justify-center'>
-              <div className='text-xs md:text-sm font-medium text-gray-400'>RANK</div>
-              <div className='text-2xl md:text-3xl font-bold text-white'>{currentRank}</div>
+          </div>
+          
+          {/* Success Image Section */}
+          <div className='w-full md:w-1/2 bg-[#1a1a1a] p-4 md:p-6 rounded-lg flex flex-col justify-center'>
+            <div className='h-40 md:h-52'>
+              <img 
+                src={SuccessImage} 
+                alt="Success" 
+                className="w-full h-full object-cover rounded-lg" 
+              />
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        /* Current Rank Display - Original layout when not videoSubmitted */
+        <div className='w-full mb-6'>
+          <div className='bg-[#1a1a1a] p-4 md:p-6 rounded-lg'>
+            <h3 className='text-lg md:text-xl font-semibold mb-3 md:mb-4 text-center'>Current Rank</h3>
+            <div className='flex flex-row items-center justify-center space-x-4'>
+              {/* Logo Section */}
+              <div className='w-16 h-16 md:w-20 md:h-20 flex items-center justify-center'>
+                <img 
+                  src={getRankLogo(currentRank)}
+                  alt={`${currentRank} Rank Icon`}
+                  className='w-full h-full'
+                />
+              </div>
+              
+              {/* Rank Text Section */}
+              <div className='flex flex-col items-start justify-center'>
+                <div className='text-xs md:text-sm font-medium text-gray-400'>RANK</div>
+                <div className='text-2xl md:text-3xl font-bold text-white'>{currentRank}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Rank Promotion Status or Failure */}
       <div className='w-full'>
@@ -516,11 +592,29 @@ const ProfilePage = () => {
           <div className='w-full'>
             <VideoUploadFailure />
           </div>
-        ) : videoSubmitted ? (
-          <div className='w-full'>
-            <SelectedRankAndUploadVideo hideHeaderFooter={true} />
+        ) : videoSubmitted && !submittingNewVideo ? (
+          <div className='w-full flex flex-col items-center bg-[#1a1a1a] p-4 md:p-8 rounded-lg'>
+            <div className='text-center mb-4'>
+              <h2 className='text-xl md:text-2xl font-bold mb-2'>Video Successfully Submitted</h2>
+              <p className='text-gray-400'>Congratulations! Your rank has been upgraded to {currentRank}</p>
+            </div>
+            
+            {/* Option to try for next rank */}
+            <div className='w-full max-w-xl mx-auto mt-4 mb-6 text-center'>
+              <p className='text-sm text-gray-400 mb-3'>Ready to upgrade to {nextRank}?</p>
+              <button 
+                className='bg-white text-black px-6 py-2 rounded font-medium hover:bg-gray-200 transition'
+                onClick={handleTryAgain}
+              >
+                Try For Next Rank
+              </button>
+            </div>
+            
+            <div className='w-full'>
+              <SelectedRankAndUploadVideo hideHeaderFooter={true} />
+            </div>
           </div>
-        ) : (
+        ) : submittingNewVideo || (!videoSubmitted && !videoFailed) ? (
           <div className='w-full flex flex-col items-center justify-center bg-[#1a1a1a] p-4 md:p-8 rounded-lg'>
             <div className='animate-spin text-3xl md:text-4xl text-white mb-4 md:mb-6'>
               <FaSpinner />
@@ -533,21 +627,23 @@ const ProfilePage = () => {
                 Your promotion to {nextRank} is in progress
               </p>
             </div>
-            {/* Test buttons for demo purposes */}
-            <div className='flex gap-4 mt-4 md:mt-6'>
-              <button 
-                className='text-xs md:text-sm text-gray-400 underline'
-                onClick={() => setVideoFailed(true)}>
-                Simulate failure
-              </button>
-              <button 
-                className='text-xs md:text-sm text-gray-400 underline'
-                onClick={handleVideoSuccess}>
-                Simulate success
-              </button>
-            </div>
+            {/* Test buttons for demo purposes - only show if not submitting new video */}
+            {!submittingNewVideo && (
+              <div className='flex gap-4 mt-4 md:mt-6'>
+                <button 
+                  className='text-xs md:text-sm text-gray-400 underline'
+                  onClick={() => setVideoFailed(true)}>
+                  Simulate failure
+                </button>
+                <button 
+                  className='text-xs md:text-sm text-gray-400 underline'
+                  onClick={handleVideoSuccess}>
+                  Simulate success
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
