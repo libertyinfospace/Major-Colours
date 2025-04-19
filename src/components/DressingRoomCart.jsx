@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaChevronLeft, FaChevronRight, FaPlus, FaTimes, FaShoppingBag, FaExchangeAlt, FaRuler } from 'react-icons/fa'
+import { FaChevronLeft, FaChevronRight, FaPlus, FaTimes, FaShoppingBag, FaExchangeAlt, FaRuler, FaLock } from 'react-icons/fa'
 import { BsDot } from 'react-icons/bs'
 import { useDispatch, useSelector } from 'react-redux'
 import { rankInfoActiveState, rankCriteriaData, addToCart, toggleCart } from '../store/activeSlices'
@@ -20,6 +20,34 @@ const DressingRoomCart = ({
   const [isFullScreen, setIsFullScreen] = useState(false); // New state for full-screen mode
   const dispatch = useDispatch();
   
+  // Get current rank from Redux store
+  const currentRank = useSelector(state => state.active?.currentRank || 'spear');
+  
+  // Define rank levels for comparison
+  const rankLevels = {
+    'SPEAR': 1,
+    'BIDENT': 2,
+    'TRIDENT': 3,
+    'EXCALIBUR': 4
+  };
+  
+  // Normalize rankType to uppercase and handle empty strings
+  const normalizedRankType = rankType ? rankType.toUpperCase() : 'SPEAR';
+  const normalizedCurrentRank = currentRank ? currentRank.toUpperCase() : 'SPEAR';
+  
+  const productRankLevel = rankLevels[normalizedRankType] || 1;
+  const userRankLevel = rankLevels[normalizedCurrentRank] || 1;
+  
+  // For debugging - only in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Product ${title}: ${normalizedRankType} (${productRankLevel}) - User: ${normalizedCurrentRank} (${userRankLevel})`);
+    }
+  }, [title, normalizedRankType, productRankLevel, normalizedCurrentRank, userRankLevel]);
+  
+  // Check if current product rank is higher than user's current rank
+  const isLocked = productRankLevel > userRankLevel;
+  
   const totalSlides = images.length;
   const sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
   
@@ -37,9 +65,9 @@ const DressingRoomCart = ({
           // When this product is visible, update the active rank
           dispatch(rankInfoActiveState({
             iconPath: rankData.iconPath,
-            name1: rankType,
-            name2: `LEVEL ${rankType === 'SPEAR' ? '1' : rankType === 'BIDENT' ? '2' : rankType === 'TRIDENT' ? '3' : '4'}`,
-            altName: `${rankType.toLowerCase()} level`
+            name1: normalizedRankType,
+            name2: `LEVEL ${normalizedRankType === 'SPEAR' ? '1' : normalizedRankType === 'BIDENT' ? '2' : normalizedRankType === 'TRIDENT' ? '3' : '4'}`,
+            altName: `${normalizedRankType.toLowerCase()} level`
           }));
           dispatch(rankCriteriaData(rankData.data));
         }
@@ -57,7 +85,7 @@ const DressingRoomCart = ({
         observer.unobserve(element);
       }
     };
-  }, [rankData, rankType, dispatch, title]);
+  }, [rankData, normalizedRankType, dispatch, title]);
   
   // Add event listener to handle escape key for closing fullscreen
   useEffect(() => {
@@ -90,6 +118,7 @@ const DressingRoomCart = ({
   };
   
   const handleSizeSelect = (size) => {
+    if (isLocked) return;
     setSelectedSize(size);
   };
 
@@ -102,29 +131,23 @@ const DressingRoomCart = ({
   };
   
   const handleAddToCart = () => {
-    if (selectedSize) {
-      const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
-      const productToAdd = {
-        id: Date.now(), // Using timestamp as a simple unique ID
-        name: title,
-        price: numericPrice,
-        size: selectedSize,
-        quantity: 1,
-        image: images[0]
-      };
-      
-      // Log before dispatching to see current state
-      console.log('Adding to cart:', productToAdd);
-      console.log('Selected size:', selectedSize);
-      
-      // Dispatch the action to add to cart
-      dispatch(addToCart(productToAdd));
-      
-      // Open the cart slide-in after adding the item
-      dispatch(toggleCart(true));
-      
-      // Remove the automatic cart closing to keep it open until user closes it
-    }
+    if (isLocked || !selectedSize) return;
+    
+    const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
+    const productToAdd = {
+      id: Date.now(), // Using timestamp as a simple unique ID
+      name: title,
+      price: numericPrice,
+      size: selectedSize,
+      quantity: 1,
+      image: images[0]
+    };
+    
+    // Dispatch the action to add to cart
+    dispatch(addToCart(productToAdd));
+    
+    // Open the cart slide-in after adding the item
+    dispatch(toggleCart(true));
   };
   
   return (
@@ -178,9 +201,19 @@ const DressingRoomCart = ({
           <div className="flex flex-col space-y-4 md:space-y-6 w-full">
             {/* Product Name and Price */}
             <div className="flex justify-between items-start">
-              <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+                {title} {isLocked && <FaLock className="ml-2 text-gray-400" />}
+              </h1>
               <span className="text-xl font-medium">{price}</span>
             </div>
+            
+            {/* Required Rank Message - only show for locked items */}
+            {isLocked && (
+              <div className="bg-gray-800 text-yellow-400 py-2 px-3 rounded text-sm flex items-center">
+                <FaLock className="mr-2" />
+                <span>{normalizedRankType} Rank Required</span>
+              </div>
+            )}
             
             {/* Model Info and Size Guide */}
             <div className="flex flex-col md:flex-row md:justify-between md:items-center text-gray-400 text-sm">
@@ -203,12 +236,13 @@ const DressingRoomCart = ({
                 {sizes.map(size => (
                   <button
                     key={size}
-                    onClick={() => handleSizeSelect(size)}
+                    onClick={() => !isLocked && handleSizeSelect(size)}
                     className={`py-2 border rounded-md transition ${
                       selectedSize === size 
                         ? 'border-white bg-white text-black' 
                         : 'border-gray-600 hover:border-gray-400'
-                    }`}
+                    } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={isLocked}
                   >
                     {size}
                   </button>
@@ -218,10 +252,11 @@ const DressingRoomCart = ({
               {/* Select Size Button - only show when no size is selected */}
               {!selectedSize && (
                 <button
-                  className="w-full py-3 px-4 bg-white text-black font-medium hover:bg-gray-200 transition-colors rounded-md mt-3"
-                  onClick={() => setSelectedSize(null)}
+                  className={`w-full py-3 px-4 bg-white text-black font-medium transition-colors rounded-md mt-3 ${isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200'}`}
+                  onClick={() => !isLocked && setSelectedSize(null)}
+                  disabled={isLocked}
                 >
-                  SELECT A SIZE
+                  {isLocked ? 'LOCKED' : 'SELECT A SIZE'}
                 </button>
               )}
             </div>
@@ -230,28 +265,34 @@ const DressingRoomCart = ({
             {selectedSize && (
               <button 
                 onClick={handleAddToCart}
-                className={`w-full py-3 ${inStock 
-                  ? 'bg-white text-black hover:bg-gray-200' 
-                  : 'bg-gray-500 text-gray-300 cursor-not-allowed'} 
-                  font-medium transition-colors duration-200 mt-4`}
-                disabled={!inStock}
+                className={`w-full py-3 ${
+                  isLocked 
+                    ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                    : inStock 
+                      ? 'bg-white text-black hover:bg-gray-200' 
+                      : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                } font-medium transition-colors duration-200 mt-4`}
+                disabled={isLocked || !inStock}
               >
-                {inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
+                {isLocked ? 'LOCKED' : inStock ? 'ADD TO CART' : 'OUT OF STOCK'}
               </button>
             )}
             
             {/* Shop Pay Button */}
             {selectedSize && (
               <button 
-                className={`w-full ${inStock 
-                  ? 'bg-[#5A31F4] hover:bg-[#4b27d3]' 
-                  : 'bg-gray-500 cursor-not-allowed'} 
-                  text-white py-3 rounded-md flex items-center justify-center space-x-1 transition shadow-sm mt-4`}
-                disabled={!inStock}
+                className={`w-full ${
+                  isLocked 
+                    ? 'bg-gray-500 cursor-not-allowed' 
+                    : inStock 
+                      ? 'bg-[#5A31F4] hover:bg-[#4b27d3]' 
+                      : 'bg-gray-500 cursor-not-allowed'
+                } text-white py-3 rounded-md flex items-center justify-center space-x-1 transition shadow-sm mt-4`}
+                disabled={isLocked || !inStock}
               >
                 <span>Buy with</span>
                 <span className="font-bold">shop</span>
-                <span className={`${inStock ? 'bg-white text-[#5A31F4]' : 'bg-gray-300 text-gray-500'} px-1 rounded`}>Pay</span>
+                <span className={`${isLocked ? 'bg-gray-300 text-gray-500' : inStock ? 'bg-white text-[#5A31F4]' : 'bg-gray-300 text-gray-500'} px-1 rounded`}>Pay</span>
               </button>
             )}
             
@@ -273,9 +314,9 @@ const DressingRoomCart = ({
               
               <div className="flex items-center">
                 <div className="w-7 flex justify-center h-6 overflow-visible">
-                  <BsDot className={`text-5xl ${inStock ? 'text-green-500' : 'text-red-500'} -mt-3`} />
+                  <BsDot className={`text-5xl ${isLocked ? 'text-red-500' : inStock ? 'text-green-500' : 'text-red-500'} -mt-3`} />
                 </div>
-                <span>{inStock ? 'In Stock' : 'Out of Stock'}</span>
+                <span>{isLocked ? 'Locked' : inStock ? 'In Stock' : 'Out of Stock'}</span>
               </div>
             </div>
           </div>

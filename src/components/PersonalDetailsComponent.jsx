@@ -162,11 +162,27 @@ const PersonalDetailsComponent = () => {
     if (validateForm()) {
       // Form is valid, simulate API call
       setTimeout(() => {
-        console.log('Form submitted:', formData);
+        // Create proper data structure with user object
+        const userData = {
+          email: formData.email,
+          phone: formData.phoneNumber,
+          phoneNumber: formData.phoneNumber,
+          user: {
+            ...formData,
+            password: formData.password.trim() // Ensure password is trimmed
+          },
+          isLoggedIn: true
+        };
+        
+        // Store user data in localStorage with key 'loginInfo'
+        localStorage.setItem('loginInfo', JSON.stringify(userData));
+        // Also store the same data with key 'userData'
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
         setFormSubmitted(true);
         setIsSubmitting(false);
-        // Redirect to profile page after successful submission
-        navigate('/profile');
+        // Redirect to homepage after successful submission
+        navigate('/');
       }, 1000);
     } else {
       setIsSubmitting(false);

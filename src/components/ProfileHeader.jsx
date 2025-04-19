@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import companyLogo from '../assets/img/MAJOR COLOURS-LOGO.png'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleCart } from '../store/activeSlices'
+// Import rank icons
+import spearIconNormal from "../assets/logo/Spear-icon-normal.svg"
+import bidentIconNormal from "../assets/logo/Bident-icon-normal.svg"
+import tridentIconNormal from "../assets/logo/Trident-icon-normal.svg"
+import excaliburIconNormal from "../assets/logo/Excalibur-icon-normal.svg"
 
 const ProfileHeader = () => {
   const navigate = useNavigate();
@@ -11,9 +16,29 @@ const ProfileHeader = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cartItems = useSelector(state => state.active.cartItems);
   const isCartOpen = useSelector(state => state.active.isCartOpen);
+  const rankInfo = useSelector(state => state.active.rankCretriaActiveState);
+  // Get the currentRank string directly from the Redux store
+  const currentRank = useSelector(state => state.active.currentRank);
+  const [userInfo, setUserInfo] = useState(null);
   
   // Calculate total items in cart
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  
+  // Check if user is logged in
+  useEffect(() => {
+    const loginInfoString = localStorage.getItem('userData');
+    if (loginInfoString) {
+      try {
+        const loginInfo = JSON.parse(loginInfoString);
+        // console.log(loginInfo.user.fullName)
+        if (loginInfo.isLoggedIn) {
+          setUserInfo(loginInfo.user);
+        }
+      } catch (error) {
+        // Error parsing login info
+      }
+    }
+  }, []);
   
   // Prevent scrolling when menu is open
   useEffect(() => {
@@ -52,6 +77,24 @@ const ProfileHeader = () => {
     setIsMenuOpen(false);
   };
   
+  // Get the appropriate rank icon based on currentRank from redux store
+  const getRankIcon = () => {
+    // Use the currentRank value to determine which icon to show
+    // Convert to lowercase and trim for case-insensitive comparison
+    const rank = currentRank ? currentRank.toLowerCase().trim() : "spear";
+    
+    switch (rank) {
+      case "bident":
+        return bidentIconNormal;
+      case "trident":
+        return tridentIconNormal;
+      case "excalibur":
+        return excaliburIconNormal;
+      default:
+        return spearIconNormal; // Default to spear
+    }
+  };
+  
   return (
     <>
       <style>
@@ -82,6 +125,19 @@ const ProfileHeader = () => {
             box-sizing: content-box;
             border: 1px solid #ffffff;
           }
+          .user-profile {
+            display: flex;
+            align-items: center;
+          }
+          .rank-icon {
+            height: 26px;
+            margin-right: 8px;
+          }
+          .user-rank {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-left: 5px;
+          }
         `}
       </style>
 
@@ -94,12 +150,28 @@ const ProfileHeader = () => {
           />
           {/* Desktop Menu */}
           <ul className="hidden sm:flex h-fit items-center text-textWhiteColor space-x-6">
-              <li
+              {userInfo ? (
+                <li
+                  onClick={() => navigate("/profile")}
+                  className="cursor-pointer hover:text-gray-300 text-navbartextSize"
+                >
+                  <div className="user-profile">
+                    <img 
+                      src={getRankIcon()} 
+                      alt="Rank" 
+                      className="rank-icon" 
+                    />
+                    <span>{userInfo.fullName}</span>
+                  </div>
+                </li>
+              ) : (
+                <li
                   onClick={() => navigate("/login")}
                   className="cursor-pointer hover:text-gray-300 text-navbartextSize"
-              >
+                >
                   Membership
-              </li>
+                </li>
+              )}
               <li
                   onClick={() => navigateTo("Dressing Room")}
                   className="cursor-pointer hover:text-gray-300 text-navbartextSize"
@@ -173,12 +245,28 @@ const ProfileHeader = () => {
                       
                       <div className="px-6 py-4">
                           <ul className="flex flex-col space-y-6">
-                              <li
-                                  onClick={() => navigateTo("/login")}
+                              {userInfo ? (
+                                <li
+                                  onClick={() => navigate("/profile")}
                                   className="cursor-pointer hover:text-gray-300 text-xl text-textWhiteColor py-2"
-                              >
+                                >
+                                  <div className="user-profile">
+                                    <img 
+                                      src={getRankIcon()} 
+                                      alt="Rank" 
+                                      className="rank-icon" 
+                                    />
+                                    <span>{userInfo.fullName}</span>
+                                  </div>
+                                </li>
+                              ) : (
+                                <li
+                                  onClick={() => navigate("/login")}
+                                  className="cursor-pointer hover:text-gray-300 text-xl text-textWhiteColor py-2"
+                                >
                                   Membership
-                              </li>
+                                </li>
+                              )}
                               <div className="border-t border-gray-700 w-full"></div>
                               
                               <li

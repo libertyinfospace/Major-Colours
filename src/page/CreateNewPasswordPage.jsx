@@ -31,12 +31,12 @@ const CreateNewPasswordPage = () => {
       return;
     }
     
-    if (formData.password.length < 8) {
+    if (formData.password.trim().length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
     
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password.trim() !== formData.confirmPassword.trim()) {
       setError('Passwords do not match');
       return;
     }
@@ -45,7 +45,6 @@ const CreateNewPasswordPage = () => {
     
     // Simulate API call
     setTimeout(() => {
-      console.log('Password updated successfully');
       setIsLoading(false);
       navigate('/login');
     }, 1000);

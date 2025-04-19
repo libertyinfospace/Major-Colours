@@ -7,22 +7,71 @@ import CommingSoonComponent from "./CommingSoonComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { commingSoonActive, toggleCart } from "../store/activeSlices";
 import { useNavigate } from "react-router-dom";
+// Import normal rank icons
+import spearIconNormal from "../assets/logo/Spear-icon-normal.svg";
+import bidentIconNormal from "../assets/logo/Bident-icon-normal.svg";
+import tridentIconNormal from "../assets/logo/Trident-icon-normal.svg";
+import excaliburIconNormal from "../assets/logo/Excalibur-icon-normal.svg";
 
 const NavbarComponent = () => {
     const navigate = useNavigate();
     const commingSoonStatus = useSelector((state) => state.active.commingSoonActive);
     const cartItems = useSelector((state) => state.active.cartItems);
+    // Get current rank from Redux state
+    const rankInfo = useSelector((state) => state.active.rankCretriaActiveState);
+    // Get the currentRank string directly from the Redux store
+    const currentRank = useSelector((state) => state.active.currentRank);
     const dispatch = useDispatch();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [needsScroll, setNeedsScroll] = useState(false);
     const sportsNavRef = useRef(null);
     const sportsContainerRef = useRef(null);
+    const [userInfo, setUserInfo] = useState(null);
+    
+    // Extract fullName from localStorage
+    useEffect(() => {
+        const userDataString = localStorage.getItem('userData');
+        
+        if (userDataString) {
+            try {
+                const parsedData = JSON.parse(userDataString);
+                
+                // Extract fullName specifically
+                if (parsedData && parsedData.user && parsedData.user.fullName) {
+                    // Fullname found in user object
+                } else if (parsedData && parsedData.fullName) {
+                    // Fullname found in root object
+                } else {
+                    // fullName not found in userData data
+                }
+            } catch (error) {
+                // Error parsing userData
+            }
+        } else {
+            // No userData found in localStorage
+        }
+    }, []);
     
     // Calculate total items in cart
     const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
     // Ref for the cart counter element to add animation when it changes
     const cartCounterRef = useRef(null);
+    
+    // Check if user is logged in
+    useEffect(() => {
+        const userDataString = localStorage.getItem('userData');
+        if (userDataString) {
+            try {
+                const userData = JSON.parse(userDataString);
+                if (userData.isLoggedIn) {
+                    setUserInfo(userData.user);
+                }
+            } catch (error) {
+                // Error parsing user data
+            }
+        }
+    }, []);
     
     // Add animation effect when cart count changes
     useEffect(() => {
@@ -76,11 +125,86 @@ const NavbarComponent = () => {
         { name: "BASKETBALL", href: "#component4", active: false }
     ];
 
-    const userNavItems = [
-        { name: "Membership", path: "/login" },
-        { name: "Dressing Room", path: "/dressing-room" },
-        { name: "Cart", path: "/cart", isCart: true }
-    ];
+    // Get the appropriate rank icon based on currentRank from redux store
+    const getRankIcon = () => {
+        // Use the currentRank value to determine which icon to show
+        // Convert to lowercase and trim for case-insensitive comparison
+        const rank = currentRank ? currentRank.toLowerCase().trim() : "spear";
+        
+        switch (rank) {
+            case "bident":
+                return bidentIconNormal;
+            case "trident":
+                return tridentIconNormal;
+            case "excalibur":
+                return excaliburIconNormal;
+            default:
+                return spearIconNormal; // Default to spear
+        }
+    };
+
+    // Create navigation items based on auth status
+    const getUserNavItems = () => {
+        const baseItems = [
+            { name: "Dressing Room", path: "/dressing-room" },
+            { name: "Cart", path: "/cart", isCart: true }
+        ];
+        
+        // Try to get fullName from localStorage
+        let fullName = null;
+        try {
+            const userDataString = localStorage.getItem('userData');
+            if (userDataString) {
+                const parsedData = JSON.parse(userDataString);
+                
+                // Extract fullName specifically
+                if (parsedData && parsedData.user && parsedData.user.fullName) {
+                    fullName = parsedData.user.fullName;
+                } else if (parsedData && parsedData.fullName) {
+                    fullName = parsedData.fullName;
+                }
+            }
+        } catch (error) {
+            // Error checking localStorage for fullName
+        }
+        
+        // Get rank icon using the helper function that now uses currentRank
+        const rankIcon = getRankIcon();
+        
+        // If we found fullName in localStorage, use it instead of "Membership"
+        if (fullName) {
+            return [
+                { 
+                    name: fullName, 
+                    path: "/profile", 
+                    isUser: true,
+                    rankIcon: rankIcon
+                },
+                ...baseItems
+            ];
+        }
+        
+        // If user is logged in through component state, use that
+        if (userInfo) {
+            return [
+                { 
+                    name: userInfo.name, 
+                    path: "/profile", 
+                    isUser: true,
+                    rankIcon: rankIcon
+                },
+                ...baseItems
+            ];
+        }
+        
+        // Otherwise show regular "Membership" link
+        return [
+            { name: "Membership", path: "/login" },
+            ...baseItems
+        ];
+    };
+    
+    const userNavItems = getUserNavItems();
 
     return(
         <div className="w-full bg-backgroundColor fixed top-0 left-0 z-20">
@@ -120,6 +244,19 @@ const NavbarComponent = () => {
                     padding: 0;
                     box-sizing: content-box;
                     border: 1px solid #ffffff;
+                }
+                .user-rank {
+                    font-size: 0.7rem;
+                    opacity: 0.7;
+                    margin-left: 5px;
+                }
+                .user-profile {
+                    display: flex;
+                    align-items: center;
+                }
+                .rank-icon {
+                    height: 26px;
+                    margin-right: 8px;
                 }
                 `}
             </style>
@@ -195,6 +332,17 @@ const NavbarComponent = () => {
                                                                     {cartItemCount < 10 ? cartItemCount : '9+'}
                                                                 </span>
                                                             </div>
+                                                        ) : item.isUser ? (
+                                                            <div className="user-profile">
+                                                                {item.rankIcon && (
+                                                                    <img 
+                                                                        src={item.rankIcon} 
+                                                                        alt="Rank" 
+                                                                        className="rank-icon" 
+                                                                    />
+                                                                )}
+                                                                <span>{item.name}</span>
+                                                            </div>
                                                         ) : (
                                                             item.name
                                                         )}
@@ -231,6 +379,17 @@ const NavbarComponent = () => {
                                                     {cartItemCount < 10 ? cartItemCount : '9+'}
                                                 </span>
                                             )}
+                                        </div>
+                                    ) : item.isUser ? (
+                                        <div className="user-profile">
+                                            {item.rankIcon && (
+                                                <img 
+                                                    src={item.rankIcon} 
+                                                    alt="Rank" 
+                                                    className="rank-icon" 
+                                                />
+                                            )}
+                                            <span>{item.name}</span>
                                         </div>
                                     ) : (
                                         item.name

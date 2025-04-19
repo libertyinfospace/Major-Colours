@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import loginImage from '../assets/img/loginImage.png'
 import LoginComponentImageSection from '../components/LoginComponentImageSection'
-import ForgotAndRegisterCompnent from '../components/ForgotAndRegisterCompnent'
 import LoginHeaderComponent from '../components/LoginHeaderComponent'
 import { useNavigate } from 'react-router-dom'
 
@@ -59,7 +58,28 @@ const LoginPage = () => {
       // Here you would typically make an API call to your backend
       // For now, we'll just simulate a delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/password');
+      
+      // Check if user info exists in localStorage
+      const loginInfo = localStorage.getItem('loginInfo');
+      
+      if (loginInfo) {
+        // Parse the stored data
+        const parsedLoginInfo = JSON.parse(loginInfo);
+        
+        // Check if the entered email or phone matches the stored data
+        if (parsedLoginInfo.email === formData.emailOrPhone || 
+            parsedLoginInfo.phone === formData.emailOrPhone ||
+            parsedLoginInfo.phoneNumber === formData.emailOrPhone) {
+          // If there's a match, navigate to password page
+          navigate('/password');
+        } else {
+          // If there's no match, navigate to register page
+          navigate('/register');
+        }
+      } else {
+        // If no data exists in localStorage, navigate to register page
+        navigate('/register');
+      }
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
@@ -97,9 +117,8 @@ const LoginPage = () => {
                 type="submit"
                 disabled={isLoading}
               >
-                {isLoading ? 'SENDING OTP...' : 'NEXT'}
+                {isLoading ? 'VERIFYING...' : 'NEXT'}
               </button>
-              <ForgotAndRegisterCompnent />
             </form>
           </div>
         </div>

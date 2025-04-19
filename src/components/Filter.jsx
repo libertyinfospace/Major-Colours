@@ -51,7 +51,7 @@ const Filter = ({ isOpen, onClose, onApplySort }) => {
       
       {/* Sidebar */}
       <div 
-        className={`fixed top-0 left-0 h-full w-[80%] md:w-[30%] max-w-sm bg-gray-900 z-[1000] shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-[80%] md:w-[30%] max-w-sm bg-black z-[1000] shadow-lg transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } text-gray-100 flex flex-col`}
       >

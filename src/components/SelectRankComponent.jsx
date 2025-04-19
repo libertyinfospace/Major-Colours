@@ -119,20 +119,8 @@ const SelectRankComponent = ({ onVideoClick }) => {
     const handleSubmit = () => {
       if (!selectedVideo) return;
       
-      // Submit the video
-      console.log('Uploading video:', selectedVideo.file);
-      
-      // Include social handles if provided
-      if (showSocialHandles) {
-        console.log('Social handles:', {
-          instagram: instagramHandle,
-          friendInstagram: friendInstagramHandle
-        });
-      }
-      
       // Navigate to profile page
-      console.log('Navigating to profile page');
-      navigate('/profile');
+      // navigate('/profile');
       
       // Also call onVideoClick if provided
       if (onVideoClick && typeof onVideoClick === 'function') {

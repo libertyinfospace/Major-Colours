@@ -20,16 +20,13 @@ const RegisterVideoSubmission = ({ onBack }) => {
 
   const handleSubmit = () => {
     // Handle submission logic here
-    console.log('Video submitted, preparing to navigate to profile page');
     
-    try {
-      // Redirect to profile page
-      navigate('/profile');
-      console.log('Navigation to profile page initiated');
-    } catch (error) {
-      console.error('Navigation failed:', error);
-      // Fallback to window.location if navigate fails
-      window.location.href = '/profile';
+    // Show success message and don't navigate away
+    alert('Video submitted successfully!');
+    
+    // Go back if onBack is provided
+    if (onBack) {
+      onBack();
     }
   };
 

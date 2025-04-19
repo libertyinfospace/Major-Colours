@@ -36,7 +36,6 @@ const ForgotPasswordPage = () => {
         
         // Form data object to submit
         const data = { email }
-        console.log(data)
         
         // Navigate to OTP page
         navigate('/otp')

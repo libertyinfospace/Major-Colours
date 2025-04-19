@@ -375,7 +375,7 @@ const DressingRoomPage = () => {
             {/* Desktop layout - Filter Button first */}
             {screenWidth >= 1000 && (
               <button 
-                className="flex-shrink-0 flex items-center gap-2 bg-gray-800 hover:bg-gray-700 transition-colors text-white py-2 px-4 rounded-lg mr-4"
+                className="flex-shrink-0 flex items-center gap-2 bg-white hover:bg-gray-100 transition-colors text-black py-2 px-4 rounded-lg mr-4"
                 onClick={() => setIsFilterOpen(true)}
               >
                 <FiFilter className="text-lg" />
@@ -423,7 +423,7 @@ const DressingRoomPage = () => {
             {screenWidth < 1000 && (
               <div className="w-full flex justify-start">
                 <button 
-                  className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 transition-colors text-white py-2 px-6 rounded-lg"
+                  className="flex items-center gap-2 bg-white hover:bg-gray-100 transition-colors text-black py-2 px-6 rounded-lg"
                   onClick={() => setIsFilterOpen(true)}
                 >
                   <FiFilter className="text-lg" />

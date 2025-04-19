@@ -73,9 +73,9 @@ const SizeGuideModal = ({ onClose, isVisible }) => {
         className="fixed top-0 right-0 bottom-0 z-[1000] h-screen"
         style={{ width: isMobile ? '100%' : '450px' }}
       >
-        <div className="h-full flex flex-col bg-[#121212] border-l border-gray-700 shadow-xl overflow-hidden">
+        <div className="h-full flex flex-col bg-black border-l border-gray-700 shadow-xl overflow-hidden">
           {/* Header with title and close button */}
-          <div className="flex justify-between items-center p-3 border-b border-gray-700 bg-[#121212]">
+          <div className="flex justify-between items-center p-3 border-b border-gray-700 bg-black">
             <h2 className="text-xl font-bold text-white">Size Guide</h2>
             <button 
               onClick={handleClose}
@@ -91,7 +91,7 @@ const SizeGuideModal = ({ onClose, isVisible }) => {
             {/* Grid Layout to fit everything on one screen */}
             <div className="grid grid-rows-[auto_auto_1fr] h-full gap-5">
               {/* Hoodie Illustration - Smaller size */}
-              <div className="bg-gray-800/20 rounded-lg p-3">
+              <div className="bg-black/20 rounded-lg p-3">
                 <img 
                   src={sizeGuideImage} 
                   alt="Hoodie dimensions illustration"
@@ -100,12 +100,12 @@ const SizeGuideModal = ({ onClose, isVisible }) => {
               </div>
               
               {/* Model Info & Unit Toggle on the same line */}
-              <div className="bg-gray-800/20 rounded-lg p-3">
+              <div className="bg-black/20 rounded-lg p-3">
                 <div className="flex flex-wrap justify-between items-center">
                   <p className="text-gray-300 text-sm mr-2">Model: 182cm/73kg (M)</p>
                   
                   {/* Unit Toggle */}
-                  <div className="flex items-center bg-gray-800 rounded-full p-1">
+                  <div className="flex items-center bg-black rounded-full p-1">
                     <button 
                       className={`px-3 py-1 rounded-full text-sm transition-colors ${unit === 'CM' ? 'bg-white text-black' : 'text-gray-300'}`}
                       onClick={() => setUnit('CM')}
@@ -123,10 +123,10 @@ const SizeGuideModal = ({ onClose, isVisible }) => {
               </div>
               
               {/* Size Table - Takes remaining space */}
-              <div className="bg-gray-800/20 rounded-lg">
+              <div className="bg-black/20 rounded-lg">
                 <div className="rounded-lg overflow-hidden border border-gray-600 shadow-lg">
                   {/* Table Header */}
-                  <div className="grid grid-cols-5 bg-gray-800 text-white font-semibold text-sm">
+                  <div className="grid grid-cols-5 bg-black text-white font-semibold text-sm">
                     <div className="p-2.5 text-center border-r border-gray-600">Size</div>
                     <div className="p-2.5 text-center border-r border-gray-600">Chest</div>
                     <div className="p-2.5 text-center border-r border-gray-600">Sleeve</div>
@@ -141,7 +141,7 @@ const SizeGuideModal = ({ onClose, isVisible }) => {
                         key={size} 
                         className={`grid grid-cols-5 ${index !== Object.keys(sizesData[unit]).length - 1 ? 'border-b border-gray-600' : ''}`}
                       >
-                        <div className="p-2.5 text-center font-medium border-r border-gray-600 bg-gray-700/30">{size}</div>
+                        <div className="p-2.5 text-center font-medium border-r border-gray-600 bg-black/30">{size}</div>
                         <div className="p-2.5 text-center border-r border-gray-600">{measurements.chest}</div>
                         <div className="p-2.5 text-center border-r border-gray-600">{measurements.sleeve}</div>
                         <div className="p-2.5 text-center border-r border-gray-600">{measurements.length}</div>

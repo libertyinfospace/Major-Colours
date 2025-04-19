@@ -1,15 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import otpImage from '../assets/img/otpImage.png'
 import LoginHeaderComponent from '../components/LoginHeaderComponent'
 import ForgotAndRegisterCompnent from '../components/ForgotAndRegisterCompnent'
 import LoginComponentImageSection from '../components/LoginComponentImageSection'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { updateUserData } from '../store/activeSlices'
 
 const PasswordPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [storedLoginInfo, setStoredLoginInfo] = useState(null);
+
+  useEffect(() => {
+    // Get stored login info on component mount
+    const loginInfoString = localStorage.getItem('loginInfo');
+    if (loginInfoString) {
+      try {
+        const loginInfo = JSON.parse(loginInfoString);
+        setStoredLoginInfo(loginInfo);
+      } catch (err) {
+        console.error('Error parsing login info from localStorage:', err);
+      }
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -17,27 +34,67 @@ const PasswordPage = () => {
     setError('');
   };
 
+  const validatePassword = (pwd) => {
+    if (!pwd.trim()) {
+      return 'Please enter your password';
+    }
+    
+    if (pwd.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!password.trim()) {
-      setError('Please enter your password');
-      return;
-    }
-    
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+    const validationError = validatePassword(password);
+    if (validationError) {
+      setError(validationError);
       return;
     }
     
     setIsLoading(true);
     try {
-      // Here you would typically make an API call to verify password
-      // For now, we'll just simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/'); // Navigate to home page after password verification
+      // Get the latest loginInfo directly from localStorage
+      const loginInfoString = localStorage.getItem('loginInfo');
+      
+      if (!loginInfoString) {
+        throw new Error('No login information found. Please try again later.');
+      }
+      
+      const loginInfo = JSON.parse(loginInfoString);
+      
+      // Check if the password matches
+      if (loginInfo && (loginInfo.password === password || (loginInfo.user && loginInfo.user.password === password))) {
+        // Password matches, create user data with login time
+        const userData = {
+          ...loginInfo,
+          loginTime: new Date().toISOString(),
+          isLoggedIn: true
+        };
+        
+        // Save user data to localStorage
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Update Redux store with user data
+        dispatch(updateUserData({
+          name: loginInfo.name || "",
+          fullName: loginInfo.fullName || loginInfo.name || "",
+          email: loginInfo.email || "",
+          number: loginInfo.phoneNumber || loginInfo.number || "",
+          gender: loginInfo.gender || ""
+        }));
+        
+        // Navigate to profile page
+        navigate('/profile');
+      } else {
+        // Password doesn't match
+        throw new Error('Password does not match. Please try again.');
+      }
     } catch (err) {
-      setError('Invalid password. Please try again.');
+      setError(err.message || 'Invalid password. Please try again.');
     } finally {
       setIsLoading(false);
     }

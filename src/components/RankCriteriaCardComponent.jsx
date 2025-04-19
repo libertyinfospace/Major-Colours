@@ -24,16 +24,9 @@ const RankCriteriaCardComponent = ({widthLen, heightLen, name, last, val1, val2}
 
   // Add testing function to monitor breakpoints and widths
   const testBreakpoints = () => {
-    console.log(`Screen width: ${window.innerWidth}px`);
-    console.log(`Is small screen: ${isSmallScreen}`);
-    console.log(`Card width: ${isSmallScreen ? '250px' : widthLen}`);
+    // Function kept for future debugging if needed
   }
   
-  useEffect(() => {
-    // For testing purposes
-    testBreakpoints();
-  }, [isSmallScreen, widthLen]);
-
   const handleClose = useCallback(() => setHoveredValue(null), [])
 
   // Extract numeric value from val1/val2 if they contain numbers
